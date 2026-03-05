@@ -1,13 +1,19 @@
 # Secrets
 .env
 
-# HuggingFace model cache (Windows-style path used in this Codespace)
-C:\AIgnatov\hf_cache/
-"C:\\AIgnatov\\hf_cache/"
+# HuggingFace model cache (13 GB — Windows-style path literal on this Linux host)
+# Double-backslash is the gitignore escape for a literal backslash
+C:\\AIgnatov\\hf_cache/
+# Glob fallback in case path varies
+*hf_cache*/
+*hf_cache/
 
-# GGUF model downloads (large binary files)
+# GGUF model downloads (large binary files, stored in /tmp outside workspace)
 *.gguf
-/tmp/gguf/
+*.bin
+*.safetensors
+*.pt
+*.pth
 
 # Python
 __pycache__/
@@ -22,12 +28,11 @@ venv/
 env/
 
 # Test result JSONs (ephemeral, stored in /tmp)
-/tmp/results_*.json
-/tmp/log_*.txt
-/tmp/cpu_monitor.log
+results_*.json
+log_*.txt
+cpu_monitor.log
 
-# LanceDB store is committed (it's our KB — small, version-controlled)
-# lancedb_store/  ← intentionally tracked
+# LanceDB store is intentionally committed (small KB, version-controlled)
 
 # Editor / OS
 .DS_Store
