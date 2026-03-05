@@ -1,0 +1,47 @@
+# model_config.yaml — RAG pipeline model profiles
+# Switch models via CLI:   python 02_rag_llama32_edge_tests.py --model gemma3_1b
+# Switch models via env:   MODEL_PROFILE=danube3_500m python 02_rag_llama32_edge_tests.py
+# Or change active_profile below and run without args.
+
+active_profile: llama32_1b_instruct
+
+profiles:
+  llama32_1b_instruct:
+    label: "Llama 3.2 1B Instruct"
+    model_id: meta-llama/Llama-3.2-1B-Instruct
+    gated: true
+    dtype: float16
+    max_new_tokens: 512
+    repetition_penalty: 1.12
+    no_repeat_ngram_size: 3
+
+  gemma3_1b:
+    label: "Gemma 3 1B Instruct"
+    model_id: google/gemma-3-1b-it
+    gated: true
+    dtype: bfloat16
+    max_new_tokens: 512
+    repetition_penalty: 1.10
+    no_repeat_ngram_size: 3
+
+  llama32_1b_q4km:
+    label: "Llama 3.2 1B Q4_K_M (GGUF)"
+    model_path: /tmp/gguf/Llama-3.2-1B-Instruct-Q4_K_M.gguf
+    backend: llamacpp
+    gated: false
+    dtype: q4_k_m
+    max_new_tokens: 512
+    repetition_penalty: 1.10
+    n_ctx: 4096
+    n_threads: 4
+    chat_format: llama-3
+
+  danube3_500m:
+    label: "H2O-Danube3 500M Chat"
+    model_id: h2oai/h2o-danube3-500m-chat
+    gated: false
+    dtype: float16
+    max_new_tokens: 512
+    repetition_penalty: 1.10
+    no_repeat_ngram_size: 3
+    no_system_role: true   # Danube3 chat template rejects system role; merge into user message
