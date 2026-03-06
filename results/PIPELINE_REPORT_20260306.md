@@ -162,7 +162,7 @@ These fire *after* LLM generation and prevent downstream failures. 0 failures re
 
 1. **ICD fallback rate is high (15/31 = 48%).** The 1B model frequently produces an empty `candidate_icd_codes`. Fallback ensures PASS but the selected code is the retrieval rank-1 result, not an LLM-reasoned selection. Consider upgrading to a 7B generator for production.
 
-2. **`EDGE_pregnancy_bleeding` fallback to N95.0.** Even with perfect retrieval (O-series in context), the 1B model declined to output codes. The correct ICD would be O20.0 (threatened abortion / first-trimester bleeding). This is a generator ceiling issue.
+2. **`EDGE_pregnancy_bleeding` fallback to N95.0.** Even with perfect retrieval (O-series in context), the 1B model declined to output codes. The correct ICD would be O20.0 BUT IT IS NOT IN THE DICTIONARY AND THUS NOT IN THE VECTOR DB (threatened abortion / first-trimester bleeding). This is a generator ceiling issue. **THIS IS CORRECT BEHAVIOUR, BECAUSE THERE ARE NO O-CODES IN THE MOCKED ICD-9 DICTIONARY AND THE MODEL DID NOT HALLUCINATE.**
 
 3. **`EDGE_conflicting_symptoms` confidence = 0.00.** The model returned 5 codes but emitted `confidence: 0`. The confidence floor only applies to `min_confidence` rules; adding a universal floor (e.g., 0.10 when codes are present) would avoid misleading zero-confidence outputs.
 
