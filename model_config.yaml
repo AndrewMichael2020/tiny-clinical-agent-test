@@ -3,7 +3,7 @@
 # Switch models via env:   MODEL_PROFILE=danube3_500m python 02_rag_llama32_edge_tests.py
 # Or change active_profile below and run without args.
 
-active_profile: llama32_1b_instruct
+active_profile: llama32_1b_q4km
 
 profiles:
   llama32_1b_instruct:

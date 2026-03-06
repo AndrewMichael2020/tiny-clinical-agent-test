@@ -791,9 +791,9 @@ def main() -> int:
     log("STEP 3 — Flushing existing LanceDB table")
     flush_lancedb_table(db_dir, table_name)
 
-    log(f"STEP 4 — Embedding {len(docs)} docs with all-MiniLM-L6-v2")
+    log(f"STEP 4 — Embedding {len(docs)} docs with NeuML/pubmedbert-base-embeddings")
     t_emb = time.perf_counter()
-    embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
+    embedder = SentenceTransformer("NeuML/pubmedbert-base-embeddings", device="cpu")
     log(f"  Embedder ready in {time.perf_counter() - t_emb:.2f}s")
 
     texts = [d["text"] for d in docs]

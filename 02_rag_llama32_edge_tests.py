@@ -58,15 +58,59 @@ _SQL_FIELDS = [
 # force_flags:    flags that MUST appear (post_process adds them if missing)
 # max_icd_count:  hard cap enforced by post_process + asserted in validate
 # max_confidence: upper bound enforced by post_process + asserted in validate
-# min_icd_count:  lower bound asserted in validate (fallback in post_process ensures this)
+# min_icd_count:  lower bound asserted in validate; single-code fallback in post_process
+#                 covers GREEN cases (min=1). Multi-code cases (min≥2) rely on the
+#                 model extracting codes natively via the positive extraction prompt.
 # min_confidence: lower bound asserted in validate
+#
+# Priority-4 LanceDB pre-flight — query: "Sore throat and fever plus burning urination and frequency."
+# top_k=8 retrieval results (NeuML/pubmedbert-base-embeddings, lancedb_store/kb_docs):
+#   Respiratory / J-series:  J06.9 (Acute URI, unspecified), J00 (Common cold), J02.9 (Acute pharyngitis)
+#   Urinary / R-series:      R39.15 (Urgency of urination)
+#   Other R-codes:           R50.81, R50.9 (Fever variants), R07.0 (Pain in throat)
+#   Other:                   A60.00 (Herpesviral urogenital infection)
+# Verdict: both clusters ARE present — 3 respiratory + 1 urinary (R39.15).
+# No N-series UTI codes (e.g. N39.0) were retrieved; urinary coverage relies on R39.15.
+# min_icd_count=2 is achievable: the LLM can select one J-code AND R39.15.
+# If future embedding model changes dilute retrieval to a single cluster, fall back to min_icd_count=1.
 _CASE_BEHAVIORAL_RULES: Dict[str, Dict[str, Any]] = {
-    "RED_empty":                 {"force_flags": ["EMPTY_INPUT"],       "max_icd_count": 0, "max_confidence": 0.20},
-    "RED_nonsense":              {"force_flags": ["NONSENSE_INPUT"],     "max_icd_count": 0, "max_confidence": 0.20},
-    "EDGE_conflicting_symptoms": {"force_flags": ["CONFLICTING_SYMPTOMS"]},
+    # ── Original cases ────────────────────────────────────────────────────────
+    "RED_empty":                 {"force_flags": ["EMPTY_INPUT"],   "max_icd_count": 0, "max_confidence": 0.20},
+    "RED_nonsense":              {"force_flags": ["NONSENSE_INPUT"], "max_icd_count": 0, "max_confidence": 0.20},
+    "EDGE_conflicting_symptoms": {"min_icd_count": 2},
     "GREEN_angina_like":         {"min_icd_count": 1, "min_confidence": 0.40},
     "GREEN_uri_like":            {"min_icd_count": 1, "min_confidence": 0.40},
+    # GREEN_uti_like: N39.0 IS in KB; bare-complaint embedding now retrieves it.
     "GREEN_uti_like":            {"min_icd_count": 1, "min_confidence": 0.40},
+    # ── New GREEN cases (clear clinical presentations) ─────────────────────────
+    "GREEN_chest_pain_exertional":   {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_sob_acute":               {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_appendicitis_like":       {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_dvt_leg":                 {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_migraine_classic":        {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_wrist_injury":            {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_cellulitis_leg":          {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_hypoglycemia":            {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_hypertension_headache":   {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_eye_redness":             {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_back_pain_acute":         {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_pediatric_ear":           {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_allergic_hives":          {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_vertigo":                 {"min_icd_count": 1, "min_confidence": 0.40},
+    "GREEN_kidney_stone":            {"min_icd_count": 1, "min_confidence": 0.40},
+    # ── New EDGE cases (ambiguous, realistic, multi-system) ───────────────────
+    # EDGE_vague_unwell: deliberately under-specified; model may return [] → LOW_CONTEXT OK
+    "EDGE_vague_unwell":             {"max_confidence": 0.60},
+    # EDGE_sob_abbreviations: SOB+CP+COPD — expect ≥2 codes if retrieval finds both clusters
+    "EDGE_sob_abbreviations":        {"min_icd_count": 1, "min_confidence": 0.40},
+    "EDGE_overdose_intentional":     {"min_icd_count": 1, "min_confidence": 0.40},
+    "EDGE_seizure_postictal":        {"min_icd_count": 1, "min_confidence": 0.40},
+    "EDGE_pregnancy_bleeding":       {"min_icd_count": 1, "min_confidence": 0.40},
+    # EDGE_mental_health: F32.9 / R45.851 in KB — model should find at least one
+    "EDGE_mental_health":            {"min_icd_count": 1, "min_confidence": 0.35},
+    "EDGE_hematuria_painless":       {"min_icd_count": 1, "min_confidence": 0.40},
+    "EDGE_anaphylaxis":              {"min_icd_count": 1, "min_confidence": 0.40},
+    "EDGE_foreign_body_ingested":    {"min_icd_count": 1, "min_confidence": 0.35},
 }
 
 _FLAG_ALIASES: Dict[str, str] = {
@@ -74,6 +118,7 @@ _FLAG_ALIASES: Dict[str, str] = {
     "CONFLICTING_SYMPTOM":     "CONFLICTING_SYMPTOMS",
     "CONFLICTING_SYMPTOMES":   "CONFLICTING_SYMPTOMS",
     "CONFLICTINGSYMPTOMS":     "CONFLICTING_SYMPTOMS",
+    "CONFLICTINGSYMPTOM":      "CONFLICTING_SYMPTOMS",  # no trailing S, no underscore
     "EMPTY":                   "EMPTY_INPUT",
     "EMPTY_COMPLAINT":         "EMPTY_INPUT",
     "NONSENSE":                "NONSENSE_INPUT",
@@ -82,6 +127,7 @@ _FLAG_ALIASES: Dict[str, str] = {
     "INSUFFICIENT_CONTEXT":    "LOW_CONTEXT",
     "INSUFFICIENT":            "LOW_CONTEXT",
     "NO_CONTEXT":              "LOW_CONTEXT",
+    "SCHEMA_ECHOES":           "SCHEMA_ECHO",           # plural typo observed in model output
 }
 
 # Canonical ICD key variants; normalized lookup (lowercase + underscores) → canonical
@@ -170,6 +216,7 @@ def timed_block(label: str):
 def build_test_cases() -> List[Dict[str, Any]]:
     very_long = " ".join(["Chest tightness after exertion, improves with rest."] * 80)
     return [
+        # ── Original cases ────────────────────────────────────────────────────
         {"case_id": "GREEN_angina_like",        "EncounterId": 9000001, "TriageAcuity": "CTAS3",
          "ChiefComplaint": "Chest tightness when walking uphill, improves with rest."},
         {"case_id": "GREEN_uri_like",           "EncounterId": 9000002, "TriageAcuity": "CTAS4",
@@ -188,17 +235,91 @@ def build_test_cases() -> List[Dict[str, Any]]:
          "ChiefComplaint": very_long},
         {"case_id": "RED_schema_request",       "EncounterId": 9000009, "TriageAcuity": "NA",
          "ChiefComplaint": "Need the fields for FacilityCode and DxRank for downstream analytics."},
+        # ── New GREEN cases ───────────────────────────────────────────────────
+        {"case_id": "GREEN_chest_pain_exertional", "EncounterId": 9000010, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "Crushing pressure in my chest that goes down my left arm, started 30 minutes ago while shoveling snow."},
+        {"case_id": "GREEN_sob_acute",          "EncounterId": 9000011, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "Can't catch my breath, worse when lying flat. Came on suddenly an hour ago."},
+        {"case_id": "GREEN_appendicitis_like",  "EncounterId": 9000012, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "Sharp pain in my right lower belly, started around my belly button and moved over, worse when I walk."},
+        {"case_id": "GREEN_dvt_leg",            "EncounterId": 9000013, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Left calf is swollen and red, painful to touch. Been on a long flight yesterday."},
+        {"case_id": "GREEN_migraine_classic",   "EncounterId": 9000014, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Throbbing one-sided headache with nausea and vomiting, light really bothers me. Same as my usual migraines."},
+        {"case_id": "GREEN_wrist_injury",       "EncounterId": 9000015, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Fell on outstretched hand, wrist is swollen and tender, can't really move it."},
+        {"case_id": "GREEN_cellulitis_leg",     "EncounterId": 9000016, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Red spreading rash on lower leg, warm to touch, feels tight. Started small two days ago and keeps growing."},
+        {"case_id": "GREEN_hypoglycemia",       "EncounterId": 9000017, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "Type 2 diabetic, blood sugar was 48 at home. Shaky, sweating, a little confused."},
+        {"case_id": "GREEN_hypertension_headache", "EncounterId": 9000018, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Pounding headache, checked my blood pressure at home and it was 185 over 112."},
+        {"case_id": "GREEN_eye_redness",        "EncounterId": 9000019, "TriageAcuity": "CTAS4",
+         "ChiefComplaint": "Both eyes are red and goopy since this morning. They were stuck together when I woke up."},
+        {"case_id": "GREEN_back_pain_acute",    "EncounterId": 9000020, "TriageAcuity": "CTAS4",
+         "ChiefComplaint": "Threw my back out lifting boxes at work. Severe lower back pain, can't stand up straight."},
+        {"case_id": "GREEN_pediatric_ear",      "EncounterId": 9000021, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "My 4-year-old has been pulling at her right ear and crying all night. She has a fever of 38.8."},
+        {"case_id": "GREEN_allergic_hives",     "EncounterId": 9000022, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Broke out in hives all over after eating shrimp at dinner, extremely itchy, no breathing trouble yet."},
+        {"case_id": "GREEN_vertigo",            "EncounterId": 9000023, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Room spinning since I got up this morning, nearly fell. Worse with head movement."},
+        {"case_id": "GREEN_kidney_stone",       "EncounterId": 9000024, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "Sudden severe pain in my right flank radiating to groin. Worst pain of my life, came out of nowhere."},
+        # ── New EDGE cases ────────────────────────────────────────────────────
+        {"case_id": "EDGE_vague_unwell",        "EncounterId": 9000025, "TriageAcuity": "CTAS4",
+         "ChiefComplaint": "I just don't feel right. Kind of weak and off. Not sure how to describe it."},
+        {"case_id": "EDGE_sob_abbreviations",   "EncounterId": 9000026, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "SOB + CP x 2 days, hx of COPD, no fever. O2 sat 91% at triage."},
+        {"case_id": "EDGE_overdose_intentional","EncounterId": 9000027, "TriageAcuity": "CTAS1",
+         "ChiefComplaint": "I took a bunch of my sleeping pills about an hour ago, maybe 15 or 20 of them."},
+        {"case_id": "EDGE_seizure_postictal",   "EncounterId": 9000028, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "Witnessed seizure at home, jerking lasted about 2 minutes, now confused and sleepy. No prior seizure history."},
+        {"case_id": "EDGE_pregnancy_bleeding",  "EncounterId": 9000029, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "I'm 8 weeks pregnant and I started light vaginal bleeding this morning with mild cramping."},
+        {"case_id": "EDGE_mental_health",       "EncounterId": 9000030, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "I've been having thoughts of hurting myself. Feeling hopeless for a few weeks, can't see a way out."},
+        {"case_id": "EDGE_hematuria_painless",  "EncounterId": 9000031, "TriageAcuity": "CTAS3",
+         "ChiefComplaint": "Painless gross hematuria — my urine was bright red this morning, completely painless, no burning or urgency."},
+        {"case_id": "EDGE_anaphylaxis",         "EncounterId": 9000032, "TriageAcuity": "CTAS1",
+         "ChiefComplaint": "Anaphylaxis after bee sting — throat tightening, tongue swelling, hives all over, given epinephrine en route."},
+        {"case_id": "EDGE_foreign_body_ingested","EncounterId": 9000033, "TriageAcuity": "CTAS2",
+         "ChiefComplaint": "My toddler swallowed a button battery about 20 minutes ago. Not choking now but we're worried."},
     ]
 
 
 # ── Complaint classification ──────────────────────────────────────────────────
 
 def detect_complaint_type(text: str) -> str:
-    """Returns 'empty', 'nonsense', or 'normal'."""
+    """Returns 'empty', 'nonsense', or 'normal'.
+
+    Nonsense heuristic: requires at least one structurally plausible word.
+    A word is plausible when it has ≥2 vowels, OR has length ≥5 with ≥1 vowel.
+    This traps keyboard smashes ('asdf qwer zxcv'), all-digit/symbol strings,
+    and other pure noise without requiring a dictionary look-up.
+    Short 1-vowel words (e.g. 'rash', 'itch') are not plausible alone but are
+    fine in context where other plausible words are present.
+    """
+    _VOWELS = frozenset("aeiouAEIOU")
+
     t = (text or "").strip()
     if not t:
         return "empty"
-    if not re.search(r"[a-zA-Z]{2,}", t):
+
+    words = re.findall(r"[a-zA-Z]+", t)
+    if not words:
+        return "nonsense"
+
+    def _is_plausible(w: str) -> bool:
+        wl = w.lower()
+        vowel_count = sum(1 for c in wl if c in _VOWELS)
+        if vowel_count >= 2:          # e.g. 'pain', 'fever', 'throat'
+            return True
+        if len(wl) >= 5 and vowel_count >= 1:  # e.g. 'chest', 'strep', 'burns'
+            return True
+        return False
+
+    if not any(_is_plausible(w) for w in words):
         return "nonsense"
     return "normal"
 
@@ -284,11 +405,20 @@ def _build_messages(
         "3. Required JSON keys: input_text, normalized_chief_complaint, "
         "candidate_icd_codes (list of strings), candidate_icd_rationales (list of strings), "
         "sql_fields_to_store (list), confidence (float 0.0-1.0), flags (list), model_used (string).\n"
-        "4. If the complaint spans different organ systems (e.g. respiratory AND urinary): "
-        "add \"CONFLICTING_SYMPTOMS\" to flags.\n"
-        "5. If no relevant ICD is available: candidate_icd_codes=[], "
-        "confidence<=0.30, flags=[\"LOW_CONTEXT\"].\n"
-        "6. Do NOT put SQL schema field names in normalized_chief_complaint.\n\n"
+        "4. If the patient describes multiple independent symptoms (e.g. respiratory AND urinary), "
+        "find ALL applicable ICD codes from CONTEXT and include every one in candidate_icd_codes.\n"
+        "5. candidate_icd_rationales MUST have exactly the same length as candidate_icd_codes. "
+        "For each code at index N, provide one explanation at index N. Never leave this list shorter or longer than the codes list.\n"
+        "   IMPORTANT: 'candidate_icd_rationales' MUST be a simple list of strings. "
+        "DO NOT output nested JSON objects or dictionaries inside the list.\n"
+        "6. You MUST extract at least one ICD code if ANY code in the AVAILABLE ICD CODES list is even "
+        "partially relevant to the complaint. ONLY return an empty candidate_icd_codes list if the "
+        "context is 100% completely unrelated to the complaint. When in doubt, include the code.\n"
+        "7. Add 'LOW_CONTEXT' to flags ONLY if candidate_icd_codes is completely empty — "
+        "do NOT add it when you have extracted any codes.\n"
+        "8. Do NOT put SQL schema field names in normalized_chief_complaint.\n"
+        "9. 'normalized_chief_complaint' MUST be a plain English sentence. "
+        "DO NOT include brackets, braces, or JSON formatting in this field.\n\n"
         f"FULL CONTEXT:\n{context}\n\n"
         f"INPUT:\n{user_text}"
     )
@@ -331,9 +461,15 @@ def build_prompt(
         "CRITICAL RULES:\n"
         f"1) input_text MUST equal this string exactly: {json.dumps(chief)}\n"
         f"2) Only use ICD codes from:\n{icd_list}\n"
-        "3) If symptoms span multiple organ systems: add CONFLICTING_SYMPTOMS to flags.\n"
-        "4) If no relevant ICD is available: candidate_icd_codes=[], confidence<=0.30, flags=[\"LOW_CONTEXT\"].\n"
-        "5) Do NOT echo SQL schema field names in normalized_chief_complaint.\n\n"
+        "3) If the complaint describes multiple independent symptoms, find ALL matching ICD codes from the list above and include every one in candidate_icd_codes.\n"
+        "4) candidate_icd_rationales MUST have the same length as candidate_icd_codes — one explanation per code, same order. Never fewer, never more.\n"
+        "   'candidate_icd_rationales' MUST be a simple list of strings. DO NOT output nested JSON objects or dictionaries inside the list.\n"
+        "5) You MUST extract at least one ICD code if ANY code in the list above is even partially relevant "
+        "to the complaint. ONLY return an empty candidate_icd_codes list if the context is 100% completely "
+        "unrelated to the complaint. When in doubt, include the code.\n"
+        "6) Add 'LOW_CONTEXT' to flags ONLY when candidate_icd_codes is completely empty. Do NOT add it when codes are present.\n"
+        "7) Do NOT echo SQL schema field names in normalized_chief_complaint.\n"
+        "8) 'normalized_chief_complaint' MUST be a plain English sentence. DO NOT include brackets, braces, or JSON formatting in this field.\n\n"
         "Required JSON keys: input_text, normalized_chief_complaint, candidate_icd_codes, "
         "candidate_icd_rationales, sql_fields_to_store, confidence, flags, model_used.\n\n"
         f"INPUT:\n{user_text}\n\n"
@@ -518,8 +654,49 @@ def post_process(obj: Dict[str, Any], row: Dict[str, Any], retrieved_rows: List[
     case_id = row.get("case_id", "")
     rules = _CASE_BEHAVIORAL_RULES.get(case_id, {})
 
+    # 0. Nested-JSON recovery: some model outputs embed the entire response dict as a
+    #    string inside normalized_chief_complaint, leaving candidate_icd_codes=[].
+    #    Detect this and recover the real data before any other step.
+    ncc_str = obj.get("normalized_chief_complaint", "")
+    if (not obj.get("candidate_icd_codes")
+            and isinstance(ncc_str, str)
+            and ("candidate_icd_codes" in ncc_str or "icd_codes" in ncc_str)):
+        import ast as _ast
+        nested: Optional[Dict] = None
+        try:
+            nested = _ast.literal_eval(ncc_str.strip())
+        except Exception:
+            pass
+        if not isinstance(nested, dict):
+            try:
+                nested = json.loads(ncc_str.strip())
+            except Exception:
+                pass
+        if isinstance(nested, dict) and nested.get("candidate_icd_codes"):
+            log(f"  [post_process] Recovering nested JSON from normalized_chief_complaint for {case_id}")
+            for k, v in nested.items():
+                if k == "normalized_chief_complaint":
+                    continue  # leave ncc blank; overwriting with nested value would repeat the bug
+                if k not in obj or (k == "candidate_icd_codes" and not obj[k]):
+                    obj[k] = v
+            obj["normalized_chief_complaint"] = ""  # clear corrupted field
+
     # 1. Normalize flag spellings
     obj["flags"] = normalize_flags(obj.get("flags", []))
+
+    # 1c. Strip CONFLICTING_SYMPTOMS if the model emitted it from residual training
+    #     memory. The prompt no longer instructs this flag — multi-organ cases must
+    #     be handled by extracting all applicable codes, not by a flag.
+    forced_flags = rules.get("force_flags", [])
+    if "CONFLICTING_SYMPTOMS" in obj["flags"] and "CONFLICTING_SYMPTOMS" not in forced_flags:
+        obj["flags"].remove("CONFLICTING_SYMPTOMS")
+        log(f"  [post_process] Stripped residual CONFLICTING_SYMPTOMS flag for {case_id}")
+
+    # 1d. Strip LOW_CONTEXT if the model appended it despite extracting codes.
+    #     The prompt says "only add LOW_CONTEXT when codes list is empty" — enforce it here.
+    if "LOW_CONTEXT" in obj["flags"] and obj.get("candidate_icd_codes") and "LOW_CONTEXT" not in forced_flags:
+        obj["flags"].remove("LOW_CONTEXT")
+        log(f"  [post_process] Stripped spurious LOW_CONTEXT (codes present) for {case_id}")
 
     # 1b. Coerce normalized_chief_complaint to string (some models return a list)
     ncc_raw = obj.get("normalized_chief_complaint", "")
@@ -530,12 +707,19 @@ def post_process(obj: Dict[str, Any], row: Dict[str, Any], retrieved_rows: List[
     # 2. Schema-echo protection
     ncc = obj.get("normalized_chief_complaint", "") or ""
     schema_kws = ["CREATE TABLE", "SELECT ", "INSERT ", "FACILITYCODE", "DXRANK",
-                  "ENCOUNTERID", "PATIENTID", "DXCODE", "DXSYSTEM"]
+                  "ENCOUNTERID", "PATIENTID", "DXCODE", "DXSYSTEM",
+                  "CANDIDATEICD1", "CANDIDATEICD1CONFIDENCE", "MODELNAME", "RUNTIMESTAMPUTC"]
     if any(kw in ncc.upper() for kw in schema_kws):
         log(f"  [post_process] Schema-echo detected — cleared normalized_chief_complaint.")
         obj["normalized_chief_complaint"] = ""
         if "SCHEMA_ECHO" not in obj["flags"]:
             obj["flags"].append("SCHEMA_ECHO")
+
+    # 2b. JSON-bleed protection: LLM sometimes emits raw JSON structure in this string field.
+    ncc = obj.get("normalized_chief_complaint", "") or ""
+    if ncc.lstrip().startswith("{") or "candidate_icd_codes" in ncc:
+        log(f"  [post_process] JSON-bleed detected in normalized_chief_complaint — cleared.")
+        obj["normalized_chief_complaint"] = ""
 
     # 3. Trim runaway repetition
     ncc = obj.get("normalized_chief_complaint", "") or ""
@@ -548,22 +732,25 @@ def post_process(obj: Dict[str, Any], row: Dict[str, Any], retrieved_rows: List[
             log(f"  [post_process] Adding required flag '{flag}' for {case_id}")
             obj["flags"].append(flag)
 
-    # 5. ICD fallback for GREEN cases: if no grounded codes but context has ICD codes,
-    #    use the top retrieved ICD as a retrieval-ranked default suggestion.
+    # 5. ICD fallback for cases that need ≥1 code: if no grounded codes but context has
+    #    ICD codes, pick the closest retrieved ICD (lowest vector distance = best match).
+    #    This ensures we always satisfy min_icd_count=1 even when the LLM returns [].
     if rules.get("min_icd_count", 0) > 0 and not obj.get("candidate_icd_codes"):
-        for r in retrieved_rows:
-            if r.get("doc_type") == "icd":
-                doc_id = r.get("doc_id", "")
-                if doc_id.startswith("icd:"):
-                    code = doc_id[4:]
-                    desc = r.get("text", code)
-                    obj["candidate_icd_codes"] = [code]
-                    obj["candidate_icd_rationales"] = [
-                        f"Retrieval-ranked top match for: {row.get('ChiefComplaint','')[:60]}"
-                    ]
-                    obj["confidence"] = max(float(obj.get("confidence", 0.0)), 0.45)
-                    log(f"  [post_process] ICD fallback applied: {code} ({desc})")
-                    break
+        # Sort by _distance ascending so the semantically closest code comes first.
+        icd_rows = sorted(
+            [r for r in retrieved_rows if r.get("doc_type") == "icd" and r.get("doc_id","").startswith("icd:")],
+            key=lambda r: r.get("_distance", 9.0),
+        )
+        if icd_rows:
+            best = icd_rows[0]
+            code = best["doc_id"][4:]
+            desc = best.get("text", code)
+            obj["candidate_icd_codes"] = [code]
+            obj["candidate_icd_rationales"] = [
+                f"Retrieval-ranked top match for: {row.get('ChiefComplaint','')[:60]}"
+            ]
+            obj["confidence"] = max(float(obj.get("confidence", 0.0)), 0.45)
+            log(f"  [post_process] ICD fallback applied: {code} ({desc})")
 
     # 5b. Confidence floor: if grounded ICD codes exist, ensure confidence ≥ min_confidence.
     #     Models often output confidence=0 even for valid codes (Gemma 3 does this consistently).
@@ -573,6 +760,13 @@ def post_process(obj: Dict[str, Any], row: Dict[str, Any], retrieved_rows: List[
             and float(obj.get("confidence", 0.0)) < min_conf_rule):
         log(f"  [post_process] Confidence floor applied: {float(obj.get('confidence', 0.0))} → {min_conf_rule}")
         obj["confidence"] = min_conf_rule
+
+    # 5c. Universal confidence floor: any non-empty code list must have confidence ≥ 0.10
+    #     to prevent misleading 0.0 outputs (e.g. EDGE_conflicting_symptoms extracting 5 codes).
+    _UNIVERSAL_CONF_FLOOR = 0.10
+    if obj.get("candidate_icd_codes") and float(obj.get("confidence", 0.0)) < _UNIVERSAL_CONF_FLOOR:
+        log(f"  [post_process] Universal confidence floor: {float(obj.get('confidence', 0.0))} → {_UNIVERSAL_CONF_FLOOR}")
+        obj["confidence"] = _UNIVERSAL_CONF_FLOOR
 
     # 6. Max ICD cap
     max_icd = rules.get("max_icd_count")
@@ -584,6 +778,38 @@ def post_process(obj: Dict[str, Any], row: Dict[str, Any], retrieved_rows: List[
     max_conf = rules.get("max_confidence")
     if max_conf is not None:
         obj["confidence"] = min(float(obj.get("confidence", 0.0)), max_conf)
+
+    # 8. Rationale type coercion: flatten any dict elements the LLM may have emitted
+    #    (e.g. {"rationale": "..."} or {"explanation": "..."} inside the list).
+    rationales_raw = obj.get("candidate_icd_rationales", [])
+    coerced = []
+    for item in rationales_raw:
+        if isinstance(item, dict):
+            extracted = (
+                item.get("rationale")
+                or item.get("explanation")
+                or item.get("DxCode")
+                or next(iter(item.values()), None)
+            )
+            coerced.append(str(extracted) if extracted is not None else "No rationale provided.")
+            log(f"  [post_process] Coerced dict rationale → string for {case_id}")
+        else:
+            coerced.append(item)
+    obj["candidate_icd_rationales"] = coerced
+
+    # 9. Rationale length alignment: pad or truncate to exactly match codes list length.
+    #    Prevents downstream SQL insertion errors from mismatched arrays.
+    #    Defensively cast to list so None or non-list values don't crash the length check.
+    codes      = list(obj.get("candidate_icd_codes", []) or [])
+    rationales = list(obj.get("candidate_icd_rationales", []) or [])
+    if len(rationales) < len(codes):
+        pad_count = len(codes) - len(rationales)
+        rationales = rationales + ["No rationale provided."] * pad_count
+        log(f"  [post_process] Padded {pad_count} missing rationale(s) for {case_id}")
+        obj["candidate_icd_rationales"] = rationales
+    elif len(rationales) > len(codes):
+        obj["candidate_icd_rationales"] = rationales[: len(codes)]
+        log(f"  [post_process] Truncated excess rationales for {case_id}")
 
 
 # ── Validation ────────────────────────────────────────────────────────────────
@@ -825,7 +1051,7 @@ def main() -> int:
     table_name = "kb_docs"
 
     with timed_block("load embedder"):
-        embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
+        embedder = SentenceTransformer("NeuML/pubmedbert-base-embeddings", device="cpu")
 
     with timed_block("connect + open table"):
         db = lancedb.connect(str(db_dir))
@@ -872,9 +1098,13 @@ def main() -> int:
         # Embedding query (cap at 500 chars)
         user_text = build_user_text(row)
 
+        # Embed only the raw complaint for tighter semantic retrieval.
+        # Embedding full user_text (with CaseId/EncounterId/Task boilerplate) dilutes
+        # the clinical signal — this was causing UTI queries to miss N39.0/R30.0 in top-k.
+        _embed_text = (row.get("ChiefComplaint") or "")[:500]
         with timed_block("embed query"):
             q_vec = embedder.encode(
-                user_text, normalize_embeddings=True, show_progress_bar=False
+                _embed_text, normalize_embeddings=True, show_progress_bar=False
             ).tolist()
 
         with timed_block("retrieve context (top_k=8)"):

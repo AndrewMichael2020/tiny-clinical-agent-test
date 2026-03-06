@@ -1,0 +1,958 @@
+{
+  "profile": "llama32_1b_q4km",
+  "model_id": "/tmp/gguf/Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+  "model_label": "Llama 3.2 1B Q4_K_M (GGUF)",
+  "passed": 33,
+  "total": 33,
+  "runtime_s": 313.08,
+  "cases": {
+    "GREEN_angina_like": "PASS",
+    "GREEN_uri_like": "PASS",
+    "GREEN_uti_like": "PASS",
+    "RED_empty": "PASS",
+    "RED_nonsense": "PASS",
+    "EDGE_contains_code": "PASS",
+    "EDGE_conflicting_symptoms": "PASS",
+    "EDGE_very_long": "PASS",
+    "RED_schema_request": "PASS",
+    "GREEN_chest_pain_exertional": "PASS",
+    "GREEN_sob_acute": "PASS",
+    "GREEN_appendicitis_like": "PASS",
+    "GREEN_dvt_leg": "PASS",
+    "GREEN_migraine_classic": "PASS",
+    "GREEN_wrist_injury": "PASS",
+    "GREEN_cellulitis_leg": "PASS",
+    "GREEN_hypoglycemia": "PASS",
+    "GREEN_hypertension_headache": "PASS",
+    "GREEN_eye_redness": "PASS",
+    "GREEN_back_pain_acute": "PASS",
+    "GREEN_pediatric_ear": "PASS",
+    "GREEN_allergic_hives": "PASS",
+    "GREEN_vertigo": "PASS",
+    "GREEN_kidney_stone": "PASS",
+    "EDGE_vague_unwell": "PASS",
+    "EDGE_sob_abbreviations": "PASS",
+    "EDGE_overdose_intentional": "PASS",
+    "EDGE_seizure_postictal": "PASS",
+    "EDGE_pregnancy_bleeding": "PASS",
+    "EDGE_mental_health": "PASS",
+    "EDGE_hematuria_painless": "PASS",
+    "EDGE_anaphylaxis": "PASS",
+    "EDGE_foreign_body_ingested": "PASS"
+  },
+  "case_outputs": {
+    "GREEN_angina_like": {
+      "input_text": "Chest tightness when walking uphill, improves with rest.",
+      "normalized_chief_complaint": "Chest tightness when walking uphill, improves with rest",
+      "candidate_icd_codes": [
+        "R07.1",
+        "R07.9",
+        "M62.830",
+        "R06.09",
+        "R26.2",
+        "R57.0"
+      ],
+      "candidate_icd_rationales": [
+        "Chest pain on breathing",
+        "Muscle spasm",
+        "Other forms of dyspnea",
+        "Difficulty in walking, not elsewhere classified",
+        "Cardiogenic shock",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.9,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_uri_like": {
+      "input_text": "Fever and sore throat for two days, no shortness of breath.",
+      "normalized_chief_complaint": "Fever presenting with conditions classified elsewhere",
+      "candidate_icd_codes": [
+        "R50.81",
+        "R50.9",
+        "J03.90",
+        "J06.9",
+        "R07.0"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "N": 0,
+          "code": "R50.81",
+          "rationale": "Fever presenting with conditions classified elsewhere is a broad category that includes fever, unspecified."
+        },
+        {
+          "N": 1,
+          "code": "R50.9",
+          "rationale": "Fever, unspecified is also a broad category that can include fever without other specified symptoms."
+        },
+        {
+          "N": 2,
+          "code": "J03.90",
+          "rationale": "Acute tonsillitis, unspecified is not directly related to the patient's chief complaint but may be relevant in certain contexts."
+        },
+        {
+          "N": 3,
+          "code": "J06.9",
+          "rationale": "Acute upper respiratory infection, unspecified is also a broad category that can include fever and other symptoms."
+        },
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "flags": [],
+      "confidence": 0.4
+    },
+    "GREEN_uti_like": {
+      "input_text": "Burning urination and frequency, suprapubic discomfort.",
+      "normalized_chief_complaint": "Burning urination and frequency, suprapubic discomfort",
+      "candidate_icd_codes": [
+        "R39.15",
+        "N40.1",
+        "N40.0"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "code": "R39.15",
+          "rationale": "Burning urination and frequency, suprapubic discomfort may be related to urgency of urination."
+        },
+        {
+          "code": "N40.1",
+          "rationale": "Benign prostatic hyperplasia with lower urinary tract symptoms can cause burning urination and frequency."
+        },
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "flags": [],
+      "confidence": 0.4
+    },
+    "RED_empty": {
+      "input_text": "",
+      "normalized_chief_complaint": "",
+      "candidate_icd_codes": [],
+      "candidate_icd_rationales": [],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.1,
+      "flags": [
+        "EMPTY_INPUT"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "RED_nonsense": {
+      "input_text": "asdf qwer zxcv 123 !!!",
+      "normalized_chief_complaint": "",
+      "candidate_icd_codes": [],
+      "candidate_icd_rationales": [],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.1,
+      "flags": [
+        "NONSENSE_INPUT"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_contains_code": {
+      "input_text": "Patient states chest pain. Prior note mentions R07.9.",
+      "normalized_chief_complaint": "{'candidate_icd_codes': ['R07.0', 'R07.1', 'R07.2'], 'candidate_icd_rationales': [{'code': 'R07.0', 'rationale': 'Pain in throat'}, {'code': 'R07.1', 'rationale': 'Chest pain on breathing'}, {'code': 'R07.2', 'rationale': 'Precordial pain'}], 'sql_fields_to_store': ['normalized_chief_complaint'], 'c...",
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "candidate_icd_codes": [],
+      "candidate_icd_rationales": [],
+      "flags": [],
+      "confidence": 0.0
+    },
+    "EDGE_conflicting_symptoms": {
+      "input_text": "Sore throat and fever plus burning urination and frequency.",
+      "normalized_chief_complaint": "Fever presenting with conditions classified elsewhere",
+      "candidate_icd_codes": [
+        "R50.81",
+        "R50.9",
+        "J06.9",
+        "J00"
+      ],
+      "candidate_icd_rationales": [
+        "The patient is experiencing symptoms of fever and sore throat, which may be indicative of an upper respiratory infection.",
+        "The patient's symptoms are consistent with a common cold, characterized by acute nasopharyngitis (common cold).",
+        "The patient's symptoms suggest that they have an underlying condition such as pharyngitis or tonsillitis.",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_very_long": {
+      "input_text": "Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest. Chest tightness after exertion, improves with rest.",
+      "normalized_chief_complaint": "Chest tightness after exertion, improves with rest",
+      "candidate_icd_codes": [
+        "R07.1",
+        "J93.0",
+        "R07.9",
+        "M62.830",
+        "J93.12",
+        "J40"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "N": 0,
+          "code": "R07.1",
+          "rationale": "Chest pain on breathing is a common symptom of various conditions, including cardiac issues and respiratory problems."
+        },
+        {
+          "N": 1,
+          "code": "J93.0",
+          "rationale": "Spontaneous tension pneumothorax can cause chest tightness that improves with rest, especially in individuals with underlying lung or heart conditions."
+        },
+        "See ICD code description.",
+        "See ICD code description.",
+        "See ICD code description.",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 1.0,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "RED_schema_request": {
+      "input_text": "Need the fields for FacilityCode and DxRank for downstream analytics.",
+      "normalized_chief_complaint": "",
+      "candidate_icd_codes": [
+        "K52.9",
+        "R18.8",
+        "G44.009",
+        "N23",
+        "K30",
+        "K75.0"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "DxId": "K52.9",
+          "DxCode": "Noninfective gastroenteritis and colitis, unspecified"
+        },
+        {
+          "DxId": "R18.8",
+          "DxCode": "Ascites"
+        },
+        "See ICD code description.",
+        "See ICD code description.",
+        "See ICD code description.",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.9,
+      "flags": [
+        "SCHEMA_ECHO"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_chest_pain_exertional": {
+      "input_text": "Crushing pressure in my chest that goes down my left arm, started 30 minutes ago while shoveling snow.",
+      "normalized_chief_complaint": "Crushing pressure in my chest that goes down my left arm",
+      "candidate_icd_codes": [
+        "R07.9",
+        "R07.1",
+        "J93.0"
+      ],
+      "candidate_icd_rationales": [
+        "chest pain, unspecified",
+        "chest pain on breathing",
+        "spontaneous tension pneumothorax"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_sob_acute": {
+      "input_text": "Can't catch my breath, worse when lying flat. Came on suddenly an hour ago.",
+      "normalized_chief_complaint": "I can barely breathe and feel short of air even when I'm sitting or lying down.",
+      "candidate_icd_codes": [
+        "R07.1",
+        "J96.01"
+      ],
+      "candidate_icd_rationales": [
+        "Chest pain on breathing may be a sign of heart problems, such as coronary artery disease.",
+        "Wheezing can be a symptom of respiratory conditions like asthma or COPD."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_appendicitis_like": {
+      "input_text": "Sharp pain in my right lower belly, started around my belly button and moved over, worse when I walk.",
+      "normalized_chief_complaint": "Sharp pain in the right lower abdomen",
+      "candidate_icd_codes": [
+        "R10.30",
+        "M54.31"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "code": "R10.30",
+          "rationale": "Right upper quadrant pain"
+        },
+        {
+          "code": "M54.31",
+          "rationale": "Sciatica, right side"
+        }
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "flags": [],
+      "confidence": 0.4
+    },
+    "GREEN_dvt_leg": {
+      "input_text": "Left calf is swollen and red, painful to touch. Been on a long flight yesterday.",
+      "normalized_chief_complaint": "{'candidate_icd_codes': ['M25.371', 'R22.41'], 'candidate_icd_rationales': ['Pain in the left calf', 'Swollen and red, with pain to touch'], 'sql_fields_to_store': [], 'confidence': 0.8, 'flags': ['LOW_CONTEXT'], 'model_used': ''}",
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "candidate_icd_codes": [
+        "M25.371"
+      ],
+      "candidate_icd_rationales": [
+        "Retrieval-ranked top match for: Left calf is swollen and red, painful to touch. Been on a lo"
+      ],
+      "flags": [],
+      "confidence": 0.45
+    },
+    "GREEN_migraine_classic": {
+      "input_text": "Throbbing one-sided headache with nausea and vomiting, light really bothers me. Same as my usual migraines.",
+      "normalized_chief_complaint": "I have a throbbing one-sided headache with nausea and vomiting, which is similar to my usual migraines.",
+      "candidate_icd_codes": [
+        "G43.009",
+        "G43.109",
+        "G44.309"
+      ],
+      "candidate_icd_rationales": [
+        "Migraine without aura, not intractable",
+        "Migraine with aura, not intractable",
+        "Post-traumatic headache, unspecified, not intractable"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_wrist_injury": {
+      "input_text": "Fell on outstretched hand, wrist is swollen and tender, can't really move it.",
+      "normalized_chief_complaint": "Wrist injury due to fall",
+      "candidate_icd_codes": [
+        "S62.000A",
+        "R22.31",
+        "M25.321"
+      ],
+      "candidate_icd_rationales": [
+        "The patient has a fracture of the navicular bone in their right wrist, which is swollen and tender.",
+        "The patient may have pain in their elbow due to the injury.",
+        "The patient's symptoms are consistent with an injury to the right upper limb."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_cellulitis_leg": {
+      "input_text": "Red spreading rash on lower leg, warm to touch, feels tight. Started small two days ago and keeps growing.",
+      "normalized_chief_complaint": "Red spreading rash on lower leg, warm to touch, feels tight. Started small two days ago and keeps growing.",
+      "candidate_icd_codes": [
+        "R22.41",
+        "R21"
+      ],
+      "candidate_icd_rationales": [
+        "R22.41 | Localized swelling, mass, lump, right lower limb",
+        "R21 | Rash and other nonspecific skin eruption"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_hypoglycemia": {
+      "input_text": "Type 2 diabetic, blood sugar was 48 at home. Shaky, sweating, a little confused.",
+      "normalized_chief_complaint": "{'candidate_icd_codes': ['E11.65', 'E10.65'], 'candidate_icd_rationales': [{'code': 'Type 2 diabetes mellitus with hyperglycaemia', 'rationale': \"The patient has Type 2 diabetes mellitus, which is a common type of diabetes that affects the body's ability to regulate blood sugar levels.\"}, {'code': '...",
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "candidate_icd_codes": [
+        "E11.65"
+      ],
+      "candidate_icd_rationales": [
+        "Retrieval-ranked top match for: Type 2 diabetic, blood sugar was 48 at home. Shaky, sweating"
+      ],
+      "flags": [],
+      "confidence": 0.45
+    },
+    "GREEN_hypertension_headache": {
+      "input_text": "Pounding headache, checked my blood pressure at home and it was 185 over 112.",
+      "normalized_chief_complaint": "pounding headache",
+      "candidate_icd_codes": [
+        "G44.309",
+        "R51.9",
+        "G44.009"
+      ],
+      "candidate_icd_rationales": [
+        "Post-traumatic headache, unspecified, not intractable",
+        "Headache, unspecified",
+        "Cluster headache syndrome, unspecified, not intractable"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_eye_redness": {
+      "input_text": "Both eyes are red and goopy since this morning. They were stuck together when I woke up.",
+      "normalized_chief_complaint": "Redness of both eyes, possibly due to conjunctivitis or corneal ulcer",
+      "candidate_icd_codes": [
+        "H10.9",
+        "H16.009",
+        "H40.211"
+      ],
+      "candidate_icd_rationales": [
+        "Unspecified conjunctivitis could be a contributing factor, but the redness of both eyes is more likely due to corneal ulcer or other eye conditions",
+        "Possible ocular pain, which could be related to corneal ulcer or other eye conditions",
+        "Redness and goop in both eyes may indicate an underlying condition such as conjunctivitis or corneal ulcer"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_back_pain_acute": {
+      "input_text": "Threw my back out lifting boxes at work. Severe lower back pain, can't stand up straight.",
+      "normalized_chief_complaint": "I threw my back out lifting boxes at work. I have severe lower back pain and cannot stand up straight.",
+      "candidate_icd_codes": [
+        "M54.50",
+        "M54.51"
+      ],
+      "candidate_icd_rationales": [
+        "The patient is experiencing low back pain, which may be related to the lifting of heavy objects at work.",
+        "The patient has a history of low back pain and may have developed sciatica due to prolonged sitting or lifting."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_pediatric_ear": {
+      "input_text": "My 4-year-old has been pulling at her right ear and crying all night. She has a fever of 38.8.",
+      "normalized_chief_complaint": "My child's 4-year-old has been experiencing ear pulling and crying, with a recent onset of a fever of 38.8.",
+      "candidate_icd_codes": [
+        "H60.9",
+        "H81.09",
+        "H93.11"
+      ],
+      "candidate_icd_rationales": [
+        "The child's symptoms are consistent with an unspecified otitis externa, which is a common condition in children.",
+        "The child's symptoms may be related to Meniere's disease, which can cause ear pulling and tinnitus.",
+        "The child's symptoms could be indicative of peripheral vertigo, particularly if the ear pulling persists."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.9,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_allergic_hives": {
+      "input_text": "Broke out in hives all over after eating shrimp at dinner, extremely itchy, no breathing trouble yet.",
+      "normalized_chief_complaint": "Allergic reaction to seafood",
+      "candidate_icd_codes": [
+        "Z91.013",
+        "T78.00XA",
+        "T78.40XA"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "code": "Z91.013",
+          "rationale": "An allergy to seafood"
+        },
+        {
+          "code": "T78.00XA",
+          "rationale": "Anaphylactic reaction due to unspecified food, initial encounter"
+        },
+        {
+          "code": "T78.40XA",
+          "rationale": "Allergy, unspecified, initial encounter"
+        }
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "flags": [],
+      "confidence": 0.4
+    },
+    "GREEN_vertigo": {
+      "input_text": "Room spinning since I got up this morning, nearly fell. Worse with head movement.",
+      "normalized_chief_complaint": "I have been experiencing room spinning and dizziness since waking up in the morning, particularly when moving my head.",
+      "candidate_icd_codes": [
+        "H81.391",
+        "R29.6",
+        "R42"
+      ],
+      "candidate_icd_rationales": [
+        "The patient is experiencing peripheral vertigo, which may be contributing to their symptoms of room spinning and dizziness.",
+        "The patient's recent fall may have caused a concussion or other head injury that could be leading to these symptoms.",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "GREEN_kidney_stone": {
+      "input_text": "Sudden severe pain in my right flank radiating to groin. Worst pain of my life, came out of nowhere.",
+      "normalized_chief_complaint": "Sudden severe pain in the right flank that radiates to the groin",
+      "candidate_icd_codes": [
+        "R10.12",
+        "R10.11"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "N": 0,
+          "code": "R10.12",
+          "explanation": "Left upper quadrant pain"
+        },
+        {
+          "N": 1,
+          "code": "R10.11",
+          "explanation": "Right upper quadrant pain"
+        }
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "flags": [],
+      "confidence": 0.4
+    },
+    "EDGE_vague_unwell": {
+      "input_text": "I just don't feel right. Kind of weak and off. Not sure how to describe it.",
+      "normalized_chief_complaint": "I just don't feel right. Kind of weak and off. I am experiencing some discomfort in my abdomen, which is making me feel unwell.",
+      "candidate_icd_codes": [
+        "M54.50",
+        "R10.10",
+        "R10.11"
+      ],
+      "candidate_icd_rationales": [
+        "I am experiencing pain in my lower back and right upper quadrant.",
+        "My abdomen is making me feel unwell, which could be related to a variety of conditions.",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.6,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_sob_abbreviations": {
+      "input_text": "SOB + CP x 2 days, hx of COPD, no fever. O2 sat 91% at triage.",
+      "normalized_chief_complaint": "Patient presents with shortness of breath and cough for 2 days, accompanied by history of chronic obstructive pulmonary disease (COPD), without fever or oxygen saturation below 90%.",
+      "candidate_icd_codes": [
+        "J44.0",
+        "J44.1"
+      ],
+      "candidate_icd_rationales": [
+        "The patient's symptoms are consistent with acute exacerbation of COPD, which is a common complication in patients with pre-existing respiratory disease.",
+        "The patient's shortness of breath and cough may be indicative of an acute lower respiratory infection, such as pneumonia caused by Haemophilus influenzae."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_overdose_intentional": {
+      "input_text": "I took a bunch of my sleeping pills about an hour ago, maybe 15 or 20 of them.",
+      "normalized_chief_complaint": "I took a bunch of my sleeping pills about an hour ago, possibly 15-20 of them.",
+      "candidate_icd_codes": [
+        "G47.00",
+        "G47.33",
+        "T39.1X1A",
+        "T42.4X1A"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "code": "G47.00",
+          "rationale": "Insomnia, unspecified"
+        },
+        {
+          "code": "G47.33",
+          "rationale": "Obstructive sleep apnoea"
+        },
+        "See ICD code description.",
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "flags": [],
+      "confidence": 0.4
+    },
+    "EDGE_seizure_postictal": {
+      "input_text": "Witnessed seizure at home, jerking lasted about 2 minutes, now confused and sleepy. No prior seizure history.",
+      "normalized_chief_complaint": "Witnessed seizure at home, jerking lasted about 2 minutes, now confused and sleepy. No prior seizure history.",
+      "candidate_icd_codes": [
+        "G40.009",
+        "G40.909",
+        "G41.0"
+      ],
+      "candidate_icd_rationales": [
+        "Localization-related epilepsy without status epilepticus, unspecified",
+        "Epilepsy, unspecified, not intractable, without status epilepticus",
+        "Grand mal status epilepticus"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_pregnancy_bleeding": {
+      "input_text": "I'm 8 weeks pregnant and I started light vaginal bleeding this morning with mild cramping.",
+      "normalized_chief_complaint": "I'm 8 weeks pregnant, and I've experienced light vaginal bleeding this morning with mild cramping.",
+      "candidate_icd_codes": [
+        "N95.0",
+        "O14.10",
+        "O13.3",
+        "G89.11"
+      ],
+      "candidate_icd_rationales": [
+        {
+          "index": 0,
+          "code": "N95.0",
+          "explanation": "Postmenopausal bleeding is a common symptom of pregnancy, especially in the first trimester."
+        },
+        {
+          "index": 1,
+          "code": "O14.10",
+          "explanation": "Severe pre-eclampsia can cause vaginal bleeding, which may be mild or heavy."
+        },
+        {
+          "index": 2,
+          "code": "O13.3",
+          "explanation": "Gestational hypertension without significant proteinuria is a risk factor for postpartum hemorrhage and vaginal bleeding."
+        },
+        "See ICD code description."
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_mental_health": {
+      "input_text": "I've been having thoughts of hurting myself. Feeling hopeless for a few weeks, can't see a way out.",
+      "normalized_chief_complaint": "I've been having thoughts of hurting myself. Feeling hopeless for a few weeks, can't see a way out.",
+      "candidate_icd_codes": [
+        "G89.21",
+        "R45.851",
+        "F11.120"
+      ],
+      "candidate_icd_rationales": [
+        "Chronic pain due to trauma",
+        "Suicidal ideations",
+        "Opioid abuse with intoxication, uncomplicated"
+      ],
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "confidence": 0.8,
+      "flags": [],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)"
+    },
+    "EDGE_hematuria_painless": {
+      "input_text": "Noticed my urine was bright red this morning. No pain at all, just scared me.",
+      "normalized_chief_complaint": "I noticed my urine was bright red this morning. I have no pain.",
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "candidate_icd_codes": [
+        "R39.15"
+      ],
+      "candidate_icd_rationales": [
+        "Retrieval-ranked top match for: Noticed my urine was bright red this morning. No pain at all"
+      ],
+      "flags": [],
+      "confidence": 0.45
+    },
+    "EDGE_anaphylaxis": {
+      "input_text": "Got stung by a bee 10 minutes ago. Throat feels tight and my face is swelling up fast.",
+      "normalized_chief_complaint": "Got stung by a bee 10 minutes ago. Throat feels tight and my face is swollen.",
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "candidate_icd_codes": [
+        "R22.0"
+      ],
+      "candidate_icd_rationales": [
+        "Retrieval-ranked top match for: Got stung by a bee 10 minutes ago. Throat feels tight and my"
+      ],
+      "flags": [],
+      "confidence": 0.45
+    },
+    "EDGE_foreign_body_ingested": {
+      "input_text": "My toddler swallowed a button battery about 20 minutes ago. Not choking now but we're worried.",
+      "normalized_chief_complaint": "My toddler swallowed a button battery about 20 minutes ago. We are concerned.",
+      "sql_fields_to_store": [
+        "EncounterId",
+        "ChiefComplaintRaw",
+        "ChiefComplaintNormalized",
+        "CandidateICD1",
+        "CandidateICD1Confidence",
+        "ModelName",
+        "RunTimestampUTC"
+      ],
+      "model_used": "Llama 3.2 1B Q4_K_M (GGUF)",
+      "candidate_icd_codes": [
+        "R07.0"
+      ],
+      "candidate_icd_rationales": [
+        "Retrieval-ranked top match for: My toddler swallowed a button battery about 20 minutes ago. "
+      ],
+      "flags": [],
+      "confidence": 0.45
+    }
+  }
+}
