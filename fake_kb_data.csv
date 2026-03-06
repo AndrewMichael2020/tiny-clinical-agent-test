@@ -1,0 +1,606 @@
+doc_type,doc_id,title,text,icd_code,icd_desc
+schema,dbo.Patient,Table dbo.Patient,"CREATE TABLE dbo.Patient ( PatientId INT PRIMARY KEY, MRN VARCHAR(12) NOT NULL, DOB DATE NULL, Sex CHAR(1) NULL, PostalCode VARCHAR(10) NULL, CreatedAt DATETIME2 NOT NULL);",,
+schema,dbo.Encounter,Table dbo.Encounter,"CREATE TABLE dbo.Encounter ( EncounterId BIGINT PRIMARY KEY, PatientId INT NOT NULL, EncounterDtm DATETIME2 NOT NULL, FacilityCode VARCHAR(10) NULL, ChiefComplaint NVARCHAR(4000) NULL, TriageAcuity VARCHAR(10) NULL, Disposition VARCHAR(50) NULL); -- FK: dbo.Encounter.PatientId -> dbo.Patient.PatientId",,
+schema,dbo.Diagnosis,Table dbo.Diagnosis,"CREATE TABLE dbo.Diagnosis ( DxId BIGINT PRIMARY KEY, EncounterId BIGINT NOT NULL, DxCode VARCHAR(10) NOT NULL, DxSystem VARCHAR(20) NOT NULL, DxDescription NVARCHAR(255) NULL, DxRank INT NULL); -- FK: dbo.Diagnosis.EncounterId -> dbo.Encounter.EncounterId",,
+icd,icd:R00.0,ICD R00.0,"R00.0 | Tachycardia, unspecified",R00.0,"Tachycardia, unspecified"
+icd,icd:R00.1,ICD R00.1,"R00.1 | Bradycardia, unspecified",R00.1,"Bradycardia, unspecified"
+icd,icd:R00.8,ICD R00.8,R00.8 | Palpitations,R00.8,Palpitations
+icd,icd:R04.0,ICD R04.0,R04.0 | Epistaxis,R04.0,Epistaxis
+icd,icd:R04.2,ICD R04.2,R04.2 | Hemoptysis,R04.2,Hemoptysis
+icd,icd:R05.9,ICD R05.9,"R05.9 | Cough, unspecified",R05.9,"Cough, unspecified"
+icd,icd:R06.00,ICD R06.00,"R06.00 | Dyspnea, unspecified",R06.00,"Dyspnea, unspecified"
+icd,icd:R06.01,ICD R06.01,R06.01 | Orthopnea,R06.01,Orthopnea
+icd,icd:R06.09,ICD R06.09,R06.09 | Other forms of dyspnea,R06.09,Other forms of dyspnea
+icd,icd:R06.1,ICD R06.1,R06.1 | Stridor,R06.1,Stridor
+icd,icd:R06.2,ICD R06.2,R06.2 | Wheezing,R06.2,Wheezing
+icd,icd:R06.4,ICD R06.4,R06.4 | Hyperventilation,R06.4,Hyperventilation
+icd,icd:R07.0,ICD R07.0,R07.0 | Pain in throat,R07.0,Pain in throat
+icd,icd:R07.1,ICD R07.1,R07.1 | Chest pain on breathing,R07.1,Chest pain on breathing
+icd,icd:R07.2,ICD R07.2,R07.2 | Precordial pain,R07.2,Precordial pain
+icd,icd:R07.9,ICD R07.9,"R07.9 | Chest pain, unspecified",R07.9,"Chest pain, unspecified"
+icd,icd:R09.02,ICD R09.02,R09.02 | Hypoxemia,R09.02,Hypoxemia
+icd,icd:R09.1,ICD R09.1,R09.1 | Pleurisy,R09.1,Pleurisy
+icd,icd:R10.0,ICD R10.0,R10.0 | Acute abdomen,R10.0,Acute abdomen
+icd,icd:R10.10,ICD R10.10,"R10.10 | Upper abdominal pain, unspecified",R10.10,"Upper abdominal pain, unspecified"
+icd,icd:R10.11,ICD R10.11,R10.11 | Right upper quadrant pain,R10.11,Right upper quadrant pain
+icd,icd:R10.12,ICD R10.12,R10.12 | Left upper quadrant pain,R10.12,Left upper quadrant pain
+icd,icd:R10.13,ICD R10.13,R10.13 | Epigastric pain,R10.13,Epigastric pain
+icd,icd:R10.2,ICD R10.2,R10.2 | Pelvic and perineal pain,R10.2,Pelvic and perineal pain
+icd,icd:R10.30,ICD R10.30,"R10.30 | Lower abdominal pain, unspecified",R10.30,"Lower abdominal pain, unspecified"
+icd,icd:R10.31,ICD R10.31,R10.31 | Right lower quadrant pain,R10.31,Right lower quadrant pain
+icd,icd:R10.32,ICD R10.32,R10.32 | Left lower quadrant pain,R10.32,Left lower quadrant pain
+icd,icd:R10.33,ICD R10.33,R10.33 | Periumbilical pain,R10.33,Periumbilical pain
+icd,icd:R10.9,ICD R10.9,R10.9 | Unspecified abdominal pain,R10.9,Unspecified abdominal pain
+icd,icd:R11.0,ICD R11.0,R11.0 | Nausea,R11.0,Nausea
+icd,icd:R11.10,ICD R11.10,"R11.10 | Vomiting, unspecified",R11.10,"Vomiting, unspecified"
+icd,icd:R11.12,ICD R11.12,R11.12 | Projectile vomiting,R11.12,Projectile vomiting
+icd,icd:R11.2,ICD R11.2,"R11.2 | Nausea with vomiting, unspecified",R11.2,"Nausea with vomiting, unspecified"
+icd,icd:R12,ICD R12,R12 | Heartburn,R12,Heartburn
+icd,icd:R13.10,ICD R13.10,"R13.10 | Dysphagia, unspecified",R13.10,"Dysphagia, unspecified"
+icd,icd:R14.0,ICD R14.0,R14.0 | Abdominal distension,R14.0,Abdominal distension
+icd,icd:R14.1,ICD R14.1,R14.1 | Gas pain,R14.1,Gas pain
+icd,icd:R17,ICD R17,R17 | Unspecified jaundice,R17,Unspecified jaundice
+icd,icd:R18.8,ICD R18.8,R18.8 | Ascites,R18.8,Ascites
+icd,icd:R19.7,ICD R19.7,"R19.7 | Diarrhea, unspecified",R19.7,"Diarrhea, unspecified"
+icd,icd:R20.2,ICD R20.2,R20.2 | Paraesthesia of skin,R20.2,Paraesthesia of skin
+icd,icd:R21,ICD R21,R21 | Rash and other nonspecific skin eruption,R21,Rash and other nonspecific skin eruption
+icd,icd:R22.0,ICD R22.0,"R22.0 | Localized swelling, mass, lump, head",R22.0,"Localized swelling, mass, lump, head"
+icd,icd:R22.1,ICD R22.1,"R22.1 | Localized swelling, mass, lump, neck",R22.1,"Localized swelling, mass, lump, neck"
+icd,icd:R22.2,ICD R22.2,"R22.2 | Localized swelling, mass, lump, trunk",R22.2,"Localized swelling, mass, lump, trunk"
+icd,icd:R22.31,ICD R22.31,"R22.31 | Localized swelling, mass, lump, right upper limb",R22.31,"Localized swelling, mass, lump, right upper limb"
+icd,icd:R22.41,ICD R22.41,"R22.41 | Localized swelling, mass, lump, right lower limb",R22.41,"Localized swelling, mass, lump, right lower limb"
+icd,icd:R23.0,ICD R23.0,R23.0 | Cyanosis,R23.0,Cyanosis
+icd,icd:R23.1,ICD R23.1,R23.1 | Pallor,R23.1,Pallor
+icd,icd:R23.2,ICD R23.2,R23.2 | Flushing,R23.2,Flushing
+icd,icd:R23.3,ICD R23.3,R23.3 | Spontaneous ecchymoses,R23.3,Spontaneous ecchymoses
+icd,icd:R25.1,ICD R25.1,"R25.1 | Tremor, unspecified",R25.1,"Tremor, unspecified"
+icd,icd:R25.2,ICD R25.2,R25.2 | Cramp and spasm,R25.2,Cramp and spasm
+icd,icd:R26.0,ICD R26.0,R26.0 | Ataxic gait,R26.0,Ataxic gait
+icd,icd:R26.2,ICD R26.2,"R26.2 | Difficulty in walking, not elsewhere classified",R26.2,"Difficulty in walking, not elsewhere classified"
+icd,icd:R26.81,ICD R26.81,R26.81 | Unsteadiness on feet,R26.81,Unsteadiness on feet
+icd,icd:R27.0,ICD R27.0,"R27.0 | Ataxia, unspecified",R27.0,"Ataxia, unspecified"
+icd,icd:R29.1,ICD R29.1,R29.1 | Meningismus,R29.1,Meningismus
+icd,icd:R29.6,ICD R29.6,R29.6 | Repeated falls,R29.6,Repeated falls
+icd,icd:R30.0,ICD R30.0,R30.0 | Dysuria,R30.0,Dysuria
+icd,icd:R30.9,ICD R30.9,"R30.9 | Painful micturition, unspecified",R30.9,"Painful micturition, unspecified"
+icd,icd:R31.0,ICD R31.0,R31.0 | Gross hematuria,R31.0,Gross hematuria
+icd,icd:R31.9,ICD R31.9,"R31.9 | Hematuria, unspecified",R31.9,"Hematuria, unspecified"
+icd,icd:R32,ICD R32,R32 | Unspecified urinary incontinence,R32,Unspecified urinary incontinence
+icd,icd:R33.9,ICD R33.9,"R33.9 | Retention of urine, unspecified",R33.9,"Retention of urine, unspecified"
+icd,icd:R35.0,ICD R35.0,R35.0 | Frequency of micturition,R35.0,Frequency of micturition
+icd,icd:R35.1,ICD R35.1,R35.1 | Nocturia,R35.1,Nocturia
+icd,icd:R39.15,ICD R39.15,R39.15 | Urgency of urination,R39.15,Urgency of urination
+icd,icd:R40.0,ICD R40.0,R40.0 | Somnolence,R40.0,Somnolence
+icd,icd:R40.1,ICD R40.1,R40.1 | Stupor,R40.1,Stupor
+icd,icd:R40.20,ICD R40.20,R40.20 | Unspecified coma,R40.20,Unspecified coma
+icd,icd:R41.0,ICD R41.0,"R41.0 | Disorientation, unspecified",R41.0,"Disorientation, unspecified"
+icd,icd:R41.3,ICD R41.3,R41.3 | Other amnesia,R41.3,Other amnesia
+icd,icd:R41.82,ICD R41.82,"R41.82 | Altered mental status, unspecified",R41.82,"Altered mental status, unspecified"
+icd,icd:R42,ICD R42,R42 | Dizziness and giddiness,R42,Dizziness and giddiness
+icd,icd:R44.0,ICD R44.0,R44.0 | Auditory hallucinations,R44.0,Auditory hallucinations
+icd,icd:R44.1,ICD R44.1,R44.1 | Visual hallucinations,R44.1,Visual hallucinations
+icd,icd:R44.3,ICD R44.3,R44.3 | Other hallucinations,R44.3,Other hallucinations
+icd,icd:R45.1,ICD R45.1,R45.1 | Restlessness and agitation,R45.1,Restlessness and agitation
+icd,icd:R45.5,ICD R45.5,R45.5 | Hostility,R45.5,Hostility
+icd,icd:R45.851,ICD R45.851,R45.851 | Suicidal ideations,R45.851,Suicidal ideations
+icd,icd:R45.850,ICD R45.850,R45.850 | Homicidal ideations,R45.850,Homicidal ideations
+icd,icd:R47.01,ICD R47.01,R47.01 | Aphasia,R47.01,Aphasia
+icd,icd:R47.1,ICD R47.1,R47.1 | Dysarthria,R47.1,Dysarthria
+icd,icd:R49.0,ICD R49.0,R49.0 | Dysphonia,R49.0,Dysphonia
+icd,icd:R50.9,ICD R50.9,"R50.9 | Fever, unspecified",R50.9,"Fever, unspecified"
+icd,icd:R50.81,ICD R50.81,R50.81 | Fever presenting with conditions classified elsewhere,R50.81,Fever presenting with conditions classified elsewhere
+icd,icd:R51.9,ICD R51.9,"R51.9 | Headache, unspecified",R51.9,"Headache, unspecified"
+icd,icd:R52,ICD R52,"R52 | Pain, unspecified",R52,"Pain, unspecified"
+icd,icd:R53.1,ICD R53.1,R53.1 | Weakness,R53.1,Weakness
+icd,icd:R53.83,ICD R53.83,R53.83 | Other fatigue,R53.83,Other fatigue
+icd,icd:R55,ICD R55,R55 | Syncope and collapse,R55,Syncope and collapse
+icd,icd:R56.00,ICD R56.00,R56.00 | Simple febrile convulsions,R56.00,Simple febrile convulsions
+icd,icd:R56.9,ICD R56.9,R56.9 | Unspecified convulsions,R56.9,Unspecified convulsions
+icd,icd:R57.0,ICD R57.0,R57.0 | Cardiogenic shock,R57.0,Cardiogenic shock
+icd,icd:R57.1,ICD R57.1,R57.1 | Hypovolemic shock,R57.1,Hypovolemic shock
+icd,icd:R57.9,ICD R57.9,"R57.9 | Shock, unspecified",R57.9,"Shock, unspecified"
+icd,icd:R58,ICD R58,"R58 | Hemorrhage, not elsewhere classified",R58,"Hemorrhage, not elsewhere classified"
+icd,icd:R59.0,ICD R59.0,R59.0 | Localized enlarged lymph nodes,R59.0,Localized enlarged lymph nodes
+icd,icd:R60.0,ICD R60.0,R60.0 | Localized edema,R60.0,Localized edema
+icd,icd:R60.1,ICD R60.1,R60.1 | Generalized edema,R60.1,Generalized edema
+icd,icd:R60.9,ICD R60.9,"R60.9 | Edema, unspecified",R60.9,"Edema, unspecified"
+icd,icd:R63.0,ICD R63.0,R63.0 | Anorexia,R63.0,Anorexia
+icd,icd:R63.4,ICD R63.4,R63.4 | Abnormal weight loss,R63.4,Abnormal weight loss
+icd,icd:R63.5,ICD R63.5,R63.5 | Abnormal weight gain,R63.5,Abnormal weight gain
+icd,icd:R65.10,ICD R65.10,R65.10 | Systemic inflammatory response syndrome without organ dysfunction,R65.10,Systemic inflammatory response syndrome without organ dysfunction
+icd,icd:R65.20,ICD R65.20,R65.20 | Severe sepsis without septic shock,R65.20,Severe sepsis without septic shock
+icd,icd:R65.21,ICD R65.21,R65.21 | Severe sepsis with septic shock,R65.21,Severe sepsis with septic shock
+icd,icd:R68.83,ICD R68.83,R68.83 | Chills without fever,R68.83,Chills without fever
+icd,icd:R73.09,ICD R73.09,R73.09 | Other abnormal glucose,R73.09,Other abnormal glucose
+icd,icd:R79.1,ICD R79.1,R79.1 | Abnormal coagulation profile,R79.1,Abnormal coagulation profile
+icd,icd:I10,ICD I10,I10 | Essential (primary) hypertension,I10,Essential (primary) hypertension
+icd,icd:I11.0,ICD I11.0,I11.0 | Hypertensive heart disease with heart failure,I11.0,Hypertensive heart disease with heart failure
+icd,icd:I11.9,ICD I11.9,I11.9 | Hypertensive heart disease without heart failure,I11.9,Hypertensive heart disease without heart failure
+icd,icd:I20.0,ICD I20.0,I20.0 | Unstable angina,I20.0,Unstable angina
+icd,icd:I20.1,ICD I20.1,I20.1 | Angina pectoris with documented spasm,I20.1,Angina pectoris with documented spasm
+icd,icd:I20.9,ICD I20.9,"I20.9 | Angina pectoris, unspecified",I20.9,"Angina pectoris, unspecified"
+icd,icd:I21.4,ICD I21.4,I21.4 | Non-ST elevation myocardial infarction,I21.4,Non-ST elevation myocardial infarction
+icd,icd:I21.9,ICD I21.9,"I21.9 | Acute myocardial infarction, unspecified",I21.9,"Acute myocardial infarction, unspecified"
+icd,icd:I21.01,ICD I21.01,I21.01 | ST elevation MI of left main coronary artery,I21.01,ST elevation MI of left main coronary artery
+icd,icd:I21.11,ICD I21.11,I21.11 | ST elevation MI of right coronary artery,I21.11,ST elevation MI of right coronary artery
+icd,icd:I26.09,ICD I26.09,I26.09 | Pulmonary embolism without acute cor pulmonale,I26.09,Pulmonary embolism without acute cor pulmonale
+icd,icd:I26.99,ICD I26.99,I26.99 | Other pulmonary embolism without acute cor pulmonale,I26.99,Other pulmonary embolism without acute cor pulmonale
+icd,icd:I30.9,ICD I30.9,"I30.9 | Acute pericarditis, unspecified",I30.9,"Acute pericarditis, unspecified"
+icd,icd:I31.3,ICD I31.3,I31.3 | Pericardial effusion (noninflammatory),I31.3,Pericardial effusion (noninflammatory)
+icd,icd:I33.0,ICD I33.0,I33.0 | Acute and subacute infective endocarditis,I33.0,Acute and subacute infective endocarditis
+icd,icd:I40.9,ICD I40.9,"I40.9 | Acute myocarditis, unspecified",I40.9,"Acute myocarditis, unspecified"
+icd,icd:I42.0,ICD I42.0,I42.0 | Dilated cardiomyopathy,I42.0,Dilated cardiomyopathy
+icd,icd:I44.2,ICD I44.2,"I44.2 | Atrioventricular block, complete",I44.2,"Atrioventricular block, complete"
+icd,icd:I46.0,ICD I46.0,I46.0 | Cardiac arrest with successful resuscitation,I46.0,Cardiac arrest with successful resuscitation
+icd,icd:I46.9,ICD I46.9,"I46.9 | Cardiac arrest, cause unspecified",I46.9,"Cardiac arrest, cause unspecified"
+icd,icd:I47.1,ICD I47.1,I47.1 | Supraventricular tachycardia,I47.1,Supraventricular tachycardia
+icd,icd:I47.2,ICD I47.2,I47.2 | Ventricular tachycardia,I47.2,Ventricular tachycardia
+icd,icd:I48.0,ICD I48.0,I48.0 | Paroxysmal atrial fibrillation,I48.0,Paroxysmal atrial fibrillation
+icd,icd:I48.19,ICD I48.19,I48.19 | Other persistent atrial fibrillation,I48.19,Other persistent atrial fibrillation
+icd,icd:I48.20,ICD I48.20,"I48.20 | Chronic atrial fibrillation, unspecified",I48.20,"Chronic atrial fibrillation, unspecified"
+icd,icd:I48.91,ICD I48.91,I48.91 | Unspecified atrial fibrillation,I48.91,Unspecified atrial fibrillation
+icd,icd:I49.01,ICD I49.01,I49.01 | Ventricular fibrillation,I49.01,Ventricular fibrillation
+icd,icd:I50.21,ICD I50.21,I50.21 | Acute systolic heart failure,I50.21,Acute systolic heart failure
+icd,icd:I50.22,ICD I50.22,I50.22 | Chronic systolic heart failure,I50.22,Chronic systolic heart failure
+icd,icd:I50.23,ICD I50.23,I50.23 | Acute on chronic systolic heart failure,I50.23,Acute on chronic systolic heart failure
+icd,icd:I50.31,ICD I50.31,I50.31 | Acute diastolic heart failure,I50.31,Acute diastolic heart failure
+icd,icd:I50.33,ICD I50.33,I50.33 | Acute on chronic diastolic heart failure,I50.33,Acute on chronic diastolic heart failure
+icd,icd:I50.9,ICD I50.9,"I50.9 | Heart failure, unspecified",I50.9,"Heart failure, unspecified"
+icd,icd:I63.9,ICD I63.9,"I63.9 | Cerebral infarction, unspecified",I63.9,"Cerebral infarction, unspecified"
+icd,icd:I64,ICD I64,"I64 | Stroke, not specified as haemorrhage or infarction",I64,"Stroke, not specified as haemorrhage or infarction"
+icd,icd:I67.0,ICD I67.0,"I67.0 | Dissection of cerebral arteries, nonruptured",I67.0,"Dissection of cerebral arteries, nonruptured"
+icd,icd:I71.00,ICD I71.00,I71.00 | Dissection of unspecified site of aorta,I71.00,Dissection of unspecified site of aorta
+icd,icd:I71.01,ICD I71.01,I71.01 | Dissection of thoracic aorta,I71.01,Dissection of thoracic aorta
+icd,icd:I71.02,ICD I71.02,I71.02 | Dissection of abdominal aorta,I71.02,Dissection of abdominal aorta
+icd,icd:I71.4,ICD I71.4,I71.4 | Abdominal aortic aneurysm without rupture,I71.4,Abdominal aortic aneurysm without rupture
+icd,icd:I74.3,ICD I74.3,I74.3 | Embolism and thrombosis of arteries of lower extremities,I74.3,Embolism and thrombosis of arteries of lower extremities
+icd,icd:I80.10,ICD I80.10,I80.10 | Phlebitis and thrombophlebitis of unspecified femoral vein,I80.10,Phlebitis and thrombophlebitis of unspecified femoral vein
+icd,icd:I82.401,ICD I82.401,"I82.401 | Acute deep vein thrombosis, right lower extremity",I82.401,"Acute deep vein thrombosis, right lower extremity"
+icd,icd:I82.402,ICD I82.402,"I82.402 | Acute deep vein thrombosis, left lower extremity",I82.402,"Acute deep vein thrombosis, left lower extremity"
+icd,icd:I95.1,ICD I95.1,I95.1 | Orthostatic hypotension,I95.1,Orthostatic hypotension
+icd,icd:I95.9,ICD I95.9,"I95.9 | Hypotension, unspecified",I95.9,"Hypotension, unspecified"
+icd,icd:I45.10,ICD I45.10,I45.10 | Unspecified right bundle-branch block,I45.10,Unspecified right bundle-branch block
+icd,icd:I25.10,ICD I25.10,I25.10 | Atherosclerotic heart disease without angina,I25.10,Atherosclerotic heart disease without angina
+icd,icd:I25.110,ICD I25.110,I25.110 | Atherosclerotic heart disease with unstable angina,I25.110,Atherosclerotic heart disease with unstable angina
+icd,icd:J00,ICD J00,J00 | Acute nasopharyngitis (common cold),J00,Acute nasopharyngitis (common cold)
+icd,icd:J01.00,ICD J01.00,"J01.00 | Acute maxillary sinusitis, unspecified",J01.00,"Acute maxillary sinusitis, unspecified"
+icd,icd:J01.10,ICD J01.10,"J01.10 | Acute frontal sinusitis, unspecified",J01.10,"Acute frontal sinusitis, unspecified"
+icd,icd:J01.90,ICD J01.90,"J01.90 | Acute sinusitis, unspecified",J01.90,"Acute sinusitis, unspecified"
+icd,icd:J02.0,ICD J02.0,J02.0 | Streptococcal pharyngitis,J02.0,Streptococcal pharyngitis
+icd,icd:J02.9,ICD J02.9,"J02.9 | Acute pharyngitis, unspecified",J02.9,"Acute pharyngitis, unspecified"
+icd,icd:J03.00,ICD J03.00,"J03.00 | Acute streptococcal tonsillitis, unspecified",J03.00,"Acute streptococcal tonsillitis, unspecified"
+icd,icd:J03.90,ICD J03.90,"J03.90 | Acute tonsillitis, unspecified",J03.90,"Acute tonsillitis, unspecified"
+icd,icd:J04.0,ICD J04.0,J04.0 | Acute laryngitis,J04.0,Acute laryngitis
+icd,icd:J04.1,ICD J04.1,J04.1 | Acute tracheitis without obstruction,J04.1,Acute tracheitis without obstruction
+icd,icd:J05.0,ICD J05.0,J05.0 | Acute obstructive laryngitis (croup),J05.0,Acute obstructive laryngitis (croup)
+icd,icd:J06.0,ICD J06.0,J06.0 | Acute laryngopharyngitis,J06.0,Acute laryngopharyngitis
+icd,icd:J06.9,ICD J06.9,"J06.9 | Acute upper respiratory infection, unspecified",J06.9,"Acute upper respiratory infection, unspecified"
+icd,icd:J10.1,ICD J10.1,J10.1 | Influenza with other respiratory manifestations,J10.1,Influenza with other respiratory manifestations
+icd,icd:J11.1,ICD J11.1,"J11.1 | Influenza with other respiratory manifestations, virus not identified",J11.1,"Influenza with other respiratory manifestations, virus not identified"
+icd,icd:J12.9,ICD J12.9,"J12.9 | Viral pneumonia, unspecified",J12.9,"Viral pneumonia, unspecified"
+icd,icd:J13,ICD J13,J13 | Pneumonia due to Streptococcus pneumoniae,J13,Pneumonia due to Streptococcus pneumoniae
+icd,icd:J14,ICD J14,J14 | Pneumonia due to Haemophilus influenzae,J14,Pneumonia due to Haemophilus influenzae
+icd,icd:J15.0,ICD J15.0,J15.0 | Pneumonia due to Klebsiella pneumoniae,J15.0,Pneumonia due to Klebsiella pneumoniae
+icd,icd:J15.212,ICD J15.212,J15.212 | Pneumonia due to Methicillin resistant Staphylococcus aureus,J15.212,Pneumonia due to Methicillin resistant Staphylococcus aureus
+icd,icd:J18.0,ICD J18.0,"J18.0 | Bronchopneumonia, unspecified organism",J18.0,"Bronchopneumonia, unspecified organism"
+icd,icd:J18.1,ICD J18.1,"J18.1 | Lobar pneumonia, unspecified organism",J18.1,"Lobar pneumonia, unspecified organism"
+icd,icd:J18.9,ICD J18.9,"J18.9 | Pneumonia, unspecified organism",J18.9,"Pneumonia, unspecified organism"
+icd,icd:J20.9,ICD J20.9,"J20.9 | Acute bronchitis, unspecified",J20.9,"Acute bronchitis, unspecified"
+icd,icd:J21.0,ICD J21.0,J21.0 | Acute bronchiolitis due to respiratory syncytial virus,J21.0,Acute bronchiolitis due to respiratory syncytial virus
+icd,icd:J21.9,ICD J21.9,"J21.9 | Acute bronchiolitis, unspecified",J21.9,"Acute bronchiolitis, unspecified"
+icd,icd:J22,ICD J22,J22 | Unspecified acute lower respiratory infection,J22,Unspecified acute lower respiratory infection
+icd,icd:J30.1,ICD J30.1,J30.1 | Allergic rhinitis due to pollen,J30.1,Allergic rhinitis due to pollen
+icd,icd:J30.9,ICD J30.9,"J30.9 | Allergic rhinitis, unspecified",J30.9,"Allergic rhinitis, unspecified"
+icd,icd:J36,ICD J36,J36 | Peritonsillar abscess,J36,Peritonsillar abscess
+icd,icd:J40,ICD J40,"J40 | Bronchitis, not specified as acute or chronic",J40,"Bronchitis, not specified as acute or chronic"
+icd,icd:J44.0,ICD J44.0,J44.0 | COPD with acute lower respiratory infection,J44.0,COPD with acute lower respiratory infection
+icd,icd:J44.1,ICD J44.1,J44.1 | COPD with acute exacerbation,J44.1,COPD with acute exacerbation
+icd,icd:J44.9,ICD J44.9,"J44.9 | COPD, unspecified",J44.9,"COPD, unspecified"
+icd,icd:J45.21,ICD J45.21,J45.21 | Mild intermittent asthma with acute exacerbation,J45.21,Mild intermittent asthma with acute exacerbation
+icd,icd:J45.31,ICD J45.31,J45.31 | Mild persistent asthma with acute exacerbation,J45.31,Mild persistent asthma with acute exacerbation
+icd,icd:J45.41,ICD J45.41,J45.41 | Moderate persistent asthma with acute exacerbation,J45.41,Moderate persistent asthma with acute exacerbation
+icd,icd:J45.51,ICD J45.51,J45.51 | Severe persistent asthma with acute exacerbation,J45.51,Severe persistent asthma with acute exacerbation
+icd,icd:J45.901,ICD J45.901,J45.901 | Unspecified asthma with acute exacerbation,J45.901,Unspecified asthma with acute exacerbation
+icd,icd:J45.90,ICD J45.90,"J45.90 | Unspecified asthma, uncomplicated",J45.90,"Unspecified asthma, uncomplicated"
+icd,icd:J80,ICD J80,J80 | Acute respiratory distress syndrome,J80,Acute respiratory distress syndrome
+icd,icd:J81.0,ICD J81.0,J81.0 | Acute pulmonary edema,J81.0,Acute pulmonary edema
+icd,icd:J93.0,ICD J93.0,J93.0 | Spontaneous tension pneumothorax,J93.0,Spontaneous tension pneumothorax
+icd,icd:J93.11,ICD J93.11,J93.11 | Primary spontaneous pneumothorax,J93.11,Primary spontaneous pneumothorax
+icd,icd:J93.12,ICD J93.12,J93.12 | Secondary spontaneous pneumothorax,J93.12,Secondary spontaneous pneumothorax
+icd,icd:J96.00,ICD J96.00,"J96.00 | Acute respiratory failure, unspecified",J96.00,"Acute respiratory failure, unspecified"
+icd,icd:J96.01,ICD J96.01,J96.01 | Acute respiratory failure with hypoxia,J96.01,Acute respiratory failure with hypoxia
+icd,icd:J96.02,ICD J96.02,J96.02 | Acute respiratory failure with hypercapnia,J96.02,Acute respiratory failure with hypercapnia
+icd,icd:J90,ICD J90,"J90 | Pleural effusion, not elsewhere classified",J90,"Pleural effusion, not elsewhere classified"
+icd,icd:J84.10,ICD J84.10,"J84.10 | Pulmonary fibrosis, unspecified",J84.10,"Pulmonary fibrosis, unspecified"
+icd,icd:K08.81,ICD K08.81,K08.81 | Dental pain,K08.81,Dental pain
+icd,icd:K21.0,ICD K21.0,K21.0 | Gastro-oesophageal reflux disease with oesophagitis,K21.0,Gastro-oesophageal reflux disease with oesophagitis
+icd,icd:K21.9,ICD K21.9,K21.9 | Gastro-oesophageal reflux disease without oesophagitis,K21.9,Gastro-oesophageal reflux disease without oesophagitis
+icd,icd:K25.0,ICD K25.0,K25.0 | Acute gastric ulcer with haemorrhage,K25.0,Acute gastric ulcer with haemorrhage
+icd,icd:K25.9,ICD K25.9,"K25.9 | Gastric ulcer, unspecified",K25.9,"Gastric ulcer, unspecified"
+icd,icd:K26.0,ICD K26.0,K26.0 | Acute duodenal ulcer with haemorrhage,K26.0,Acute duodenal ulcer with haemorrhage
+icd,icd:K29.00,ICD K29.00,K29.00 | Acute gastritis without bleeding,K29.00,Acute gastritis without bleeding
+icd,icd:K29.01,ICD K29.01,K29.01 | Acute gastritis with bleeding,K29.01,Acute gastritis with bleeding
+icd,icd:K29.70,ICD K29.70,"K29.70 | Gastritis, unspecified, without bleeding",K29.70,"Gastritis, unspecified, without bleeding"
+icd,icd:K30,ICD K30,K30 | Functional dyspepsia,K30,Functional dyspepsia
+icd,icd:K35.20,ICD K35.20,K35.20 | Acute appendicitis with generalized peritonitis,K35.20,Acute appendicitis with generalized peritonitis
+icd,icd:K35.80,ICD K35.80,K35.80 | Acute appendicitis without peritonitis or abscess,K35.80,Acute appendicitis without peritonitis or abscess
+icd,icd:K37,ICD K37,K37 | Unspecified appendicitis,K37,Unspecified appendicitis
+icd,icd:K40.90,ICD K40.90,"K40.90 | Unilateral inguinal hernia, without obstruction or gangrene",K40.90,"Unilateral inguinal hernia, without obstruction or gangrene"
+icd,icd:K40.30,ICD K40.30,"K40.30 | Unilateral inguinal hernia with obstruction, without gangrene",K40.30,"Unilateral inguinal hernia with obstruction, without gangrene"
+icd,icd:K42.0,ICD K42.0,K42.0 | Umbilical hernia with obstruction,K42.0,Umbilical hernia with obstruction
+icd,icd:K42.9,ICD K42.9,K42.9 | Umbilical hernia without obstruction or gangrene,K42.9,Umbilical hernia without obstruction or gangrene
+icd,icd:K50.90,ICD K50.90,"K50.90 | Crohn's disease, unspecified, without complications",K50.90,"Crohn's disease, unspecified, without complications"
+icd,icd:K51.90,ICD K51.90,"K51.90 | Ulcerative colitis, unspecified, without complications",K51.90,"Ulcerative colitis, unspecified, without complications"
+icd,icd:K52.9,ICD K52.9,"K52.9 | Noninfective gastroenteritis and colitis, unspecified",K52.9,"Noninfective gastroenteritis and colitis, unspecified"
+icd,icd:K56.0,ICD K56.0,K56.0 | Paralytic ileus,K56.0,Paralytic ileus
+icd,icd:K56.50,ICD K56.50,K56.50 | Intestinal adhesions with partial obstruction,K56.50,Intestinal adhesions with partial obstruction
+icd,icd:K56.609,ICD K56.609,K56.609 | Unspecified intestinal obstruction,K56.609,Unspecified intestinal obstruction
+icd,icd:K57.20,ICD K57.20,K57.20 | Diverticulitis of large intestine without perforation,K57.20,Diverticulitis of large intestine without perforation
+icd,icd:K57.30,ICD K57.30,K57.30 | Diverticulosis of large intestine without perforation,K57.30,Diverticulosis of large intestine without perforation
+icd,icd:K60.0,ICD K60.0,K60.0 | Acute anal fissure,K60.0,Acute anal fissure
+icd,icd:K61.0,ICD K61.0,K61.0 | Anal abscess,K61.0,Anal abscess
+icd,icd:K64.0,ICD K64.0,K64.0 | First degree haemorrhoids,K64.0,First degree haemorrhoids
+icd,icd:K64.9,ICD K64.9,K64.9 | Unspecified haemorrhoids,K64.9,Unspecified haemorrhoids
+icd,icd:K70.30,ICD K70.30,K70.30 | Alcoholic cirrhosis of liver without ascites,K70.30,Alcoholic cirrhosis of liver without ascites
+icd,icd:K72.90,ICD K72.90,"K72.90 | Hepatic failure, unspecified without coma",K72.90,"Hepatic failure, unspecified without coma"
+icd,icd:K74.60,ICD K74.60,K74.60 | Unspecified cirrhosis of liver,K74.60,Unspecified cirrhosis of liver
+icd,icd:K75.0,ICD K75.0,K75.0 | Abscess of liver,K75.0,Abscess of liver
+icd,icd:K76.0,ICD K76.0,K76.0 | Fatty (change of) liver,K76.0,Fatty (change of) liver
+icd,icd:K80.00,ICD K80.00,K80.00 | Calculus of gallbladder with acute cholecystitis without obstruction,K80.00,Calculus of gallbladder with acute cholecystitis without obstruction
+icd,icd:K80.20,ICD K80.20,"K80.20 | Calculus of gallbladder without cholecystitis, without obstruction",K80.20,"Calculus of gallbladder without cholecystitis, without obstruction"
+icd,icd:K81.0,ICD K81.0,K81.0 | Acute cholecystitis,K81.0,Acute cholecystitis
+icd,icd:K81.9,ICD K81.9,"K81.9 | Cholecystitis, unspecified",K81.9,"Cholecystitis, unspecified"
+icd,icd:K83.0,ICD K83.0,K83.0 | Cholangitis,K83.0,Cholangitis
+icd,icd:K85.90,ICD K85.90,"K85.90 | Acute pancreatitis without necrosis or infection, unspecified",K85.90,"Acute pancreatitis without necrosis or infection, unspecified"
+icd,icd:K86.1,ICD K86.1,K86.1 | Other chronic pancreatitis,K86.1,Other chronic pancreatitis
+icd,icd:K92.0,ICD K92.0,K92.0 | Haematemesis,K92.0,Haematemesis
+icd,icd:K92.1,ICD K92.1,K92.1 | Melaena,K92.1,Melaena
+icd,icd:K92.2,ICD K92.2,"K92.2 | Gastrointestinal haemorrhage, unspecified",K92.2,"Gastrointestinal haemorrhage, unspecified"
+icd,icd:N10,ICD N10,N10 | Acute pyelonephritis,N10,Acute pyelonephritis
+icd,icd:N11.9,ICD N11.9,"N11.9 | Chronic tubulo-interstitial nephritis, unspecified",N11.9,"Chronic tubulo-interstitial nephritis, unspecified"
+icd,icd:N13.30,ICD N13.30,N13.30 | Unspecified hydronephrosis,N13.30,Unspecified hydronephrosis
+icd,icd:N17.0,ICD N17.0,N17.0 | Acute kidney failure with tubular necrosis,N17.0,Acute kidney failure with tubular necrosis
+icd,icd:N17.9,ICD N17.9,"N17.9 | Acute kidney failure, unspecified",N17.9,"Acute kidney failure, unspecified"
+icd,icd:N18.3,ICD N18.3,"N18.3 | Chronic kidney disease, stage 3 (moderate)",N18.3,"Chronic kidney disease, stage 3 (moderate)"
+icd,icd:N18.4,ICD N18.4,"N18.4 | Chronic kidney disease, stage 4 (severe)",N18.4,"Chronic kidney disease, stage 4 (severe)"
+icd,icd:N18.5,ICD N18.5,"N18.5 | Chronic kidney disease, stage 5",N18.5,"Chronic kidney disease, stage 5"
+icd,icd:N18.6,ICD N18.6,N18.6 | End stage renal disease,N18.6,End stage renal disease
+icd,icd:N20.0,ICD N20.0,N20.0 | Calculus of kidney,N20.0,Calculus of kidney
+icd,icd:N20.1,ICD N20.1,N20.1 | Calculus of ureter,N20.1,Calculus of ureter
+icd,icd:N20.9,ICD N20.9,"N20.9 | Urinary calculus, unspecified",N20.9,"Urinary calculus, unspecified"
+icd,icd:N23,ICD N23,N23 | Unspecified renal colic,N23,Unspecified renal colic
+icd,icd:N30.00,ICD N30.00,N30.00 | Acute cystitis without haematuria,N30.00,Acute cystitis without haematuria
+icd,icd:N30.01,ICD N30.01,N30.01 | Acute cystitis with haematuria,N30.01,Acute cystitis with haematuria
+icd,icd:N39.0,ICD N39.0,"N39.0 | Urinary tract infection, site not specified",N39.0,"Urinary tract infection, site not specified"
+icd,icd:N39.3,ICD N39.3,N39.3 | Stress incontinence (female),N39.3,Stress incontinence (female)
+icd,icd:N39.41,ICD N39.41,N39.41 | Urge incontinence,N39.41,Urge incontinence
+icd,icd:N40.0,ICD N40.0,N40.0 | Benign prostatic hyperplasia without lower urinary tract symptoms,N40.0,Benign prostatic hyperplasia without lower urinary tract symptoms
+icd,icd:N40.1,ICD N40.1,N40.1 | Benign prostatic hyperplasia with lower urinary tract symptoms,N40.1,Benign prostatic hyperplasia with lower urinary tract symptoms
+icd,icd:N41.0,ICD N41.0,N41.0 | Acute prostatitis,N41.0,Acute prostatitis
+icd,icd:N41.1,ICD N41.1,N41.1 | Chronic prostatitis,N41.1,Chronic prostatitis
+icd,icd:N44.01,ICD N44.01,N44.01 | Extravaginal torsion of spermatic cord,N44.01,Extravaginal torsion of spermatic cord
+icd,icd:N44.02,ICD N44.02,N44.02 | Intravaginal torsion of spermatic cord,N44.02,Intravaginal torsion of spermatic cord
+icd,icd:N45.1,ICD N45.1,N45.1 | Epididymitis,N45.1,Epididymitis
+icd,icd:N45.3,ICD N45.3,N45.3 | Epididymo-orchitis,N45.3,Epididymo-orchitis
+icd,icd:N70.01,ICD N70.01,N70.01 | Acute salpingitis,N70.01,Acute salpingitis
+icd,icd:N70.91,ICD N70.91,"N70.91 | Salpingitis, unspecified",N70.91,"Salpingitis, unspecified"
+icd,icd:N73.0,ICD N73.0,N73.0 | Acute parametritis and pelvic cellulitis,N73.0,Acute parametritis and pelvic cellulitis
+icd,icd:N73.9,ICD N73.9,"N73.9 | Female pelvic inflammatory disease, unspecified",N73.9,"Female pelvic inflammatory disease, unspecified"
+icd,icd:N76.0,ICD N76.0,N76.0 | Acute vaginitis,N76.0,Acute vaginitis
+icd,icd:N80.0,ICD N80.0,N80.0 | Endometriosis of uterus,N80.0,Endometriosis of uterus
+icd,icd:N83.20,ICD N83.20,N83.20 | Unspecified ovarian cyst,N83.20,Unspecified ovarian cyst
+icd,icd:N94.6,ICD N94.6,"N94.6 | Dysmenorrhoea, unspecified",N94.6,"Dysmenorrhoea, unspecified"
+icd,icd:N95.0,ICD N95.0,N95.0 | Postmenopausal bleeding,N95.0,Postmenopausal bleeding
+icd,icd:G00.9,ICD G00.9,"G00.9 | Bacterial meningitis, unspecified",G00.9,"Bacterial meningitis, unspecified"
+icd,icd:G03.9,ICD G03.9,"G03.9 | Meningitis, unspecified",G03.9,"Meningitis, unspecified"
+icd,icd:G04.90,ICD G04.90,"G04.90 | Encephalitis and encephalomyelitis, unspecified",G04.90,"Encephalitis and encephalomyelitis, unspecified"
+icd,icd:G20,ICD G20,G20 | Parkinson's disease,G20,Parkinson's disease
+icd,icd:G25.0,ICD G25.0,G25.0 | Essential tremor,G25.0,Essential tremor
+icd,icd:G25.81,ICD G25.81,G25.81 | Restless legs syndrome,G25.81,Restless legs syndrome
+icd,icd:G35,ICD G35,G35 | Multiple sclerosis,G35,Multiple sclerosis
+icd,icd:G40.009,ICD G40.009,"G40.009 | Localization-related epilepsy without status epilepticus, unspecified",G40.009,"Localization-related epilepsy without status epilepticus, unspecified"
+icd,icd:G40.909,ICD G40.909,"G40.909 | Epilepsy, unspecified, not intractable, without status epilepticus",G40.909,"Epilepsy, unspecified, not intractable, without status epilepticus"
+icd,icd:G41.0,ICD G41.0,G41.0 | Grand mal status epilepticus,G41.0,Grand mal status epilepticus
+icd,icd:G43.009,ICD G43.009,"G43.009 | Migraine without aura, not intractable",G43.009,"Migraine without aura, not intractable"
+icd,icd:G43.109,ICD G43.109,"G43.109 | Migraine with aura, not intractable",G43.109,"Migraine with aura, not intractable"
+icd,icd:G43.909,ICD G43.909,"G43.909 | Migraine, unspecified, not intractable",G43.909,"Migraine, unspecified, not intractable"
+icd,icd:G44.009,ICD G44.009,"G44.009 | Cluster headache syndrome, unspecified, not intractable",G44.009,"Cluster headache syndrome, unspecified, not intractable"
+icd,icd:G44.309,ICD G44.309,"G44.309 | Post-traumatic headache, unspecified, not intractable",G44.309,"Post-traumatic headache, unspecified, not intractable"
+icd,icd:G45.0,ICD G45.0,G45.0 | Vertebro-basilar artery syndrome,G45.0,Vertebro-basilar artery syndrome
+icd,icd:G45.9,ICD G45.9,"G45.9 | Transient cerebral ischaemic attack, unspecified",G45.9,"Transient cerebral ischaemic attack, unspecified"
+icd,icd:G47.00,ICD G47.00,"G47.00 | Insomnia, unspecified",G47.00,"Insomnia, unspecified"
+icd,icd:G47.30,ICD G47.30,"G47.30 | Sleep apnoea, unspecified",G47.30,"Sleep apnoea, unspecified"
+icd,icd:G47.33,ICD G47.33,G47.33 | Obstructive sleep apnoea,G47.33,Obstructive sleep apnoea
+icd,icd:G50.0,ICD G50.0,G50.0 | Trigeminal neuralgia,G50.0,Trigeminal neuralgia
+icd,icd:G51.0,ICD G51.0,G51.0 | Bell palsy,G51.0,Bell palsy
+icd,icd:G54.2,ICD G54.2,"G54.2 | Cervical root disorders, not elsewhere classified",G54.2,"Cervical root disorders, not elsewhere classified"
+icd,icd:G54.4,ICD G54.4,G54.4 | Lumbosacral root disorders,G54.4,Lumbosacral root disorders
+icd,icd:G56.00,ICD G56.00,"G56.00 | Carpal tunnel syndrome, unspecified upper limb",G56.00,"Carpal tunnel syndrome, unspecified upper limb"
+icd,icd:G57.00,ICD G57.00,"G57.00 | Lesion of sciatic nerve, unspecified lower limb",G57.00,"Lesion of sciatic nerve, unspecified lower limb"
+icd,icd:G61.0,ICD G61.0,G61.0 | Guillain-Barré syndrome,G61.0,Guillain-Barré syndrome
+icd,icd:G62.9,ICD G62.9,"G62.9 | Polyneuropathy, unspecified",G62.9,"Polyneuropathy, unspecified"
+icd,icd:G70.01,ICD G70.01,G70.01 | Myasthenia gravis with acute exacerbation,G70.01,Myasthenia gravis with acute exacerbation
+icd,icd:G89.11,ICD G89.11,G89.11 | Acute pain due to trauma,G89.11,Acute pain due to trauma
+icd,icd:G89.21,ICD G89.21,G89.21 | Chronic pain due to trauma,G89.21,Chronic pain due to trauma
+icd,icd:G89.29,ICD G89.29,G89.29 | Other chronic pain,G89.29,Other chronic pain
+icd,icd:G89.4,ICD G89.4,G89.4 | Chronic pain syndrome,G89.4,Chronic pain syndrome
+icd,icd:G93.1,ICD G93.1,"G93.1 | Anoxic brain damage, not elsewhere classified",G93.1,"Anoxic brain damage, not elsewhere classified"
+icd,icd:G93.40,ICD G93.40,"G93.40 | Encephalopathy, unspecified",G93.40,"Encephalopathy, unspecified"
+icd,icd:G93.41,ICD G93.41,G93.41 | Metabolic encephalopathy,G93.41,Metabolic encephalopathy
+icd,icd:G93.6,ICD G93.6,G93.6 | Cerebral oedema,G93.6,Cerebral oedema
+icd,icd:G96.0,ICD G96.0,G96.0 | Cerebrospinal fluid leak,G96.0,Cerebrospinal fluid leak
+icd,icd:F05,ICD F05,F05 | Delirium due to known physiological condition,F05,Delirium due to known physiological condition
+icd,icd:F10.10,ICD F10.10,"F10.10 | Alcohol abuse, uncomplicated",F10.10,"Alcohol abuse, uncomplicated"
+icd,icd:F10.120,ICD F10.120,"F10.120 | Alcohol abuse with intoxication, uncomplicated",F10.120,"Alcohol abuse with intoxication, uncomplicated"
+icd,icd:F10.20,ICD F10.20,"F10.20 | Alcohol dependence, uncomplicated",F10.20,"Alcohol dependence, uncomplicated"
+icd,icd:F10.230,ICD F10.230,"F10.230 | Alcohol dependence with withdrawal, uncomplicated",F10.230,"Alcohol dependence with withdrawal, uncomplicated"
+icd,icd:F10.231,ICD F10.231,F10.231 | Alcohol dependence with withdrawal delirium,F10.231,Alcohol dependence with withdrawal delirium
+icd,icd:F11.10,ICD F11.10,"F11.10 | Opioid abuse, uncomplicated",F11.10,"Opioid abuse, uncomplicated"
+icd,icd:F11.120,ICD F11.120,"F11.120 | Opioid abuse with intoxication, uncomplicated",F11.120,"Opioid abuse with intoxication, uncomplicated"
+icd,icd:F11.20,ICD F11.20,"F11.20 | Opioid dependence, uncomplicated",F11.20,"Opioid dependence, uncomplicated"
+icd,icd:F12.120,ICD F12.120,"F12.120 | Cannabis abuse with intoxication, uncomplicated",F12.120,"Cannabis abuse with intoxication, uncomplicated"
+icd,icd:F13.230,ICD F13.230,"F13.230 | Sedative dependence with withdrawal, uncomplicated",F13.230,"Sedative dependence with withdrawal, uncomplicated"
+icd,icd:F14.120,ICD F14.120,"F14.120 | Cocaine abuse with intoxication, uncomplicated",F14.120,"Cocaine abuse with intoxication, uncomplicated"
+icd,icd:F15.120,ICD F15.120,"F15.120 | Other stimulant abuse with intoxication, uncomplicated",F15.120,"Other stimulant abuse with intoxication, uncomplicated"
+icd,icd:F19.120,ICD F19.120,"F19.120 | Other psychoactive substance abuse with intoxication, uncomplicated",F19.120,"Other psychoactive substance abuse with intoxication, uncomplicated"
+icd,icd:F20.0,ICD F20.0,F20.0 | Paranoid schizophrenia,F20.0,Paranoid schizophrenia
+icd,icd:F20.9,ICD F20.9,"F20.9 | Schizophrenia, unspecified",F20.9,"Schizophrenia, unspecified"
+icd,icd:F23,ICD F23,F23 | Brief psychotic disorder,F23,Brief psychotic disorder
+icd,icd:F25.0,ICD F25.0,"F25.0 | Schizoaffective disorder, bipolar type",F25.0,"Schizoaffective disorder, bipolar type"
+icd,icd:F25.9,ICD F25.9,"F25.9 | Schizoaffective disorder, unspecified",F25.9,"Schizoaffective disorder, unspecified"
+icd,icd:F31.10,ICD F31.10,"F31.10 | Bipolar disorder, current episode manic without psychotic features, unspecified",F31.10,"Bipolar disorder, current episode manic without psychotic features, unspecified"
+icd,icd:F31.9,ICD F31.9,"F31.9 | Bipolar disorder, unspecified",F31.9,"Bipolar disorder, unspecified"
+icd,icd:F32.0,ICD F32.0,"F32.0 | Major depressive disorder, single episode, mild",F32.0,"Major depressive disorder, single episode, mild"
+icd,icd:F32.1,ICD F32.1,"F32.1 | Major depressive disorder, single episode, moderate",F32.1,"Major depressive disorder, single episode, moderate"
+icd,icd:F32.2,ICD F32.2,"F32.2 | Major depressive disorder, single episode, severe without psychotic features",F32.2,"Major depressive disorder, single episode, severe without psychotic features"
+icd,icd:F32.3,ICD F32.3,"F32.3 | Major depressive disorder, single episode, severe with psychotic features",F32.3,"Major depressive disorder, single episode, severe with psychotic features"
+icd,icd:F32.9,ICD F32.9,"F32.9 | Major depressive disorder, single episode, unspecified",F32.9,"Major depressive disorder, single episode, unspecified"
+icd,icd:F33.1,ICD F33.1,"F33.1 | Major depressive disorder, recurrent, moderate",F33.1,"Major depressive disorder, recurrent, moderate"
+icd,icd:F33.9,ICD F33.9,"F33.9 | Major depressive disorder, recurrent, unspecified",F33.9,"Major depressive disorder, recurrent, unspecified"
+icd,icd:F40.00,ICD F40.00,F40.00 | Agoraphobia without panic disorder,F40.00,Agoraphobia without panic disorder
+icd,icd:F41.0,ICD F41.0,F41.0 | Panic disorder without agoraphobia,F41.0,Panic disorder without agoraphobia
+icd,icd:F41.1,ICD F41.1,F41.1 | Generalised anxiety disorder,F41.1,Generalised anxiety disorder
+icd,icd:F41.9,ICD F41.9,"F41.9 | Anxiety disorder, unspecified",F41.9,"Anxiety disorder, unspecified"
+icd,icd:F42.9,ICD F42.9,"F42.9 | Obsessive-compulsive disorder, unspecified",F42.9,"Obsessive-compulsive disorder, unspecified"
+icd,icd:F43.0,ICD F43.0,F43.0 | Acute stress reaction,F43.0,Acute stress reaction
+icd,icd:F43.10,ICD F43.10,"F43.10 | Post-traumatic stress disorder, unspecified",F43.10,"Post-traumatic stress disorder, unspecified"
+icd,icd:F43.12,ICD F43.12,"F43.12 | Post-traumatic stress disorder, chronic",F43.12,"Post-traumatic stress disorder, chronic"
+icd,icd:F43.21,ICD F43.21,F43.21 | Adjustment disorder with depressed mood,F43.21,Adjustment disorder with depressed mood
+icd,icd:F43.22,ICD F43.22,F43.22 | Adjustment disorder with anxiety,F43.22,Adjustment disorder with anxiety
+icd,icd:F43.23,ICD F43.23,F43.23 | Adjustment disorder with mixed anxiety and depressed mood,F43.23,Adjustment disorder with mixed anxiety and depressed mood
+icd,icd:F50.00,ICD F50.00,"F50.00 | Anorexia nervosa, unspecified",F50.00,"Anorexia nervosa, unspecified"
+icd,icd:F50.2,ICD F50.2,F50.2 | Bulimia nervosa,F50.2,Bulimia nervosa
+icd,icd:F60.3,ICD F60.3,F60.3 | Borderline personality disorder,F60.3,Borderline personality disorder
+icd,icd:F60.9,ICD F60.9,"F60.9 | Personality disorder, unspecified",F60.9,"Personality disorder, unspecified"
+icd,icd:F90.9,ICD F90.9,"F90.9 | Attention-deficit hyperactivity disorder, unspecified type",F90.9,"Attention-deficit hyperactivity disorder, unspecified type"
+icd,icd:F99,ICD F99,"F99 | Mental disorder, not otherwise specified",F99,"Mental disorder, not otherwise specified"
+icd,icd:M00.9,ICD M00.9,"M00.9 | Pyogenic arthritis, unspecified",M00.9,"Pyogenic arthritis, unspecified"
+icd,icd:M06.9,ICD M06.9,"M06.9 | Rheumatoid arthritis, unspecified",M06.9,"Rheumatoid arthritis, unspecified"
+icd,icd:M10.00,ICD M10.00,"M10.00 | Idiopathic gout, unspecified site",M10.00,"Idiopathic gout, unspecified site"
+icd,icd:M10.07,ICD M10.07,"M10.07 | Idiopathic gout, ankle and foot",M10.07,"Idiopathic gout, ankle and foot"
+icd,icd:M10.9,ICD M10.9,"M10.9 | Gout, unspecified",M10.9,"Gout, unspecified"
+icd,icd:M13.0,ICD M13.0,"M13.0 | Polyarthritis, unspecified",M13.0,"Polyarthritis, unspecified"
+icd,icd:M16.9,ICD M16.9,"M16.9 | Osteoarthritis of hip, unspecified",M16.9,"Osteoarthritis of hip, unspecified"
+icd,icd:M17.11,ICD M17.11,"M17.11 | Primary osteoarthritis, right knee",M17.11,"Primary osteoarthritis, right knee"
+icd,icd:M17.12,ICD M17.12,"M17.12 | Primary osteoarthritis, left knee",M17.12,"Primary osteoarthritis, left knee"
+icd,icd:M17.9,ICD M17.9,"M17.9 | Osteoarthritis of knee, unspecified",M17.9,"Osteoarthritis of knee, unspecified"
+icd,icd:M25.311,ICD M25.311,M25.311 | Pain in right shoulder,M25.311,Pain in right shoulder
+icd,icd:M25.312,ICD M25.312,M25.312 | Pain in left shoulder,M25.312,Pain in left shoulder
+icd,icd:M25.321,ICD M25.321,M25.321 | Pain in right elbow,M25.321,Pain in right elbow
+icd,icd:M25.361,ICD M25.361,M25.361 | Pain in right knee,M25.361,Pain in right knee
+icd,icd:M25.362,ICD M25.362,M25.362 | Pain in left knee,M25.362,Pain in left knee
+icd,icd:M25.371,ICD M25.371,M25.371 | Pain in right ankle,M25.371,Pain in right ankle
+icd,icd:M35.0,ICD M35.0,M35.0 | Sjögren syndrome,M35.0,Sjögren syndrome
+icd,icd:M45.0,ICD M45.0,M45.0 | Ankylosing spondylitis of multiple sites in spine,M45.0,Ankylosing spondylitis of multiple sites in spine
+icd,icd:M47.816,ICD M47.816,"M47.816 | Spondylosis without myelopathy or radiculopathy, lumbar region",M47.816,"Spondylosis without myelopathy or radiculopathy, lumbar region"
+icd,icd:M48.06,ICD M48.06,"M48.06 | Spinal stenosis, lumbar region",M48.06,"Spinal stenosis, lumbar region"
+icd,icd:M50.20,ICD M50.20,"M50.20 | Other cervical disc displacement, unspecified cervical region",M50.20,"Other cervical disc displacement, unspecified cervical region"
+icd,icd:M51.16,ICD M51.16,"M51.16 | Intervertebral disc degeneration, lumbar region",M51.16,"Intervertebral disc degeneration, lumbar region"
+icd,icd:M54.2,ICD M54.2,M54.2 | Cervicalgia,M54.2,Cervicalgia
+icd,icd:M54.30,ICD M54.30,"M54.30 | Sciatica, unspecified side",M54.30,"Sciatica, unspecified side"
+icd,icd:M54.31,ICD M54.31,"M54.31 | Sciatica, right side",M54.31,"Sciatica, right side"
+icd,icd:M54.32,ICD M54.32,"M54.32 | Sciatica, left side",M54.32,"Sciatica, left side"
+icd,icd:M54.40,ICD M54.40,"M54.40 | Lumbago with sciatica, unspecified side",M54.40,"Lumbago with sciatica, unspecified side"
+icd,icd:M54.41,ICD M54.41,"M54.41 | Lumbago with sciatica, right side",M54.41,"Lumbago with sciatica, right side"
+icd,icd:M54.50,ICD M54.50,"M54.50 | Low back pain, unspecified",M54.50,"Low back pain, unspecified"
+icd,icd:M54.51,ICD M54.51,M54.51 | Vertebrogenic low back pain,M54.51,Vertebrogenic low back pain
+icd,icd:M54.9,ICD M54.9,"M54.9 | Dorsalgia, unspecified",M54.9,"Dorsalgia, unspecified"
+icd,icd:M62.830,ICD M62.830,M62.830 | Muscle spasm,M62.830,Muscle spasm
+icd,icd:M65.30,ICD M65.30,"M65.30 | Trigger finger, unspecified finger",M65.30,"Trigger finger, unspecified finger"
+icd,icd:M70.50,ICD M70.50,"M70.50 | Bursitis of hip, unspecified hip",M70.50,"Bursitis of hip, unspecified hip"
+icd,icd:M75.0,ICD M75.0,M75.0 | Adhesive capsulitis of shoulder,M75.0,Adhesive capsulitis of shoulder
+icd,icd:M75.1,ICD M75.1,M75.1 | Rotator cuff syndrome,M75.1,Rotator cuff syndrome
+icd,icd:M76.60,ICD M76.60,"M76.60 | Achilles tendinitis, unspecified leg",M76.60,"Achilles tendinitis, unspecified leg"
+icd,icd:M77.11,ICD M77.11,"M77.11 | Lateral epicondylitis, right elbow",M77.11,"Lateral epicondylitis, right elbow"
+icd,icd:M79.1,ICD M79.1,M79.1 | Myalgia,M79.1,Myalgia
+icd,icd:M79.2,ICD M79.2,"M79.2 | Neuralgia and neuritis, unspecified",M79.2,"Neuralgia and neuritis, unspecified"
+icd,icd:M79.3,ICD M79.3,"M79.3 | Panniculitis, unspecified",M79.3,"Panniculitis, unspecified"
+icd,icd:M79.7,ICD M79.7,M79.7 | Fibromyalgia,M79.7,Fibromyalgia
+icd,icd:M81.0,ICD M81.0,M81.0 | Age-related osteoporosis without current pathological fracture,M81.0,Age-related osteoporosis without current pathological fracture
+icd,icd:M86.9,ICD M86.9,"M86.9 | Osteomyelitis, unspecified",M86.9,"Osteomyelitis, unspecified"
+icd,icd:A04.5,ICD A04.5,A04.5 | Campylobacter enteritis,A04.5,Campylobacter enteritis
+icd,icd:A04.7,ICD A04.7,A04.7 | Enterocolitis due to Clostridium difficile,A04.7,Enterocolitis due to Clostridium difficile
+icd,icd:A08.0,ICD A08.0,A08.0 | Rotaviral enteritis,A08.0,Rotaviral enteritis
+icd,icd:A09,ICD A09,"A09 | Infectious gastroenteritis and colitis, unspecified",A09,"Infectious gastroenteritis and colitis, unspecified"
+icd,icd:A40.0,ICD A40.0,"A40.0 | Sepsis due to streptococcus, group A",A40.0,"Sepsis due to streptococcus, group A"
+icd,icd:A40.9,ICD A40.9,"A40.9 | Streptococcal sepsis, unspecified",A40.9,"Streptococcal sepsis, unspecified"
+icd,icd:A41.01,ICD A41.01,A41.01 | Sepsis due to Methicillin susceptible Staphylococcus aureus,A41.01,Sepsis due to Methicillin susceptible Staphylococcus aureus
+icd,icd:A41.02,ICD A41.02,A41.02 | Sepsis due to Methicillin resistant Staphylococcus aureus,A41.02,Sepsis due to Methicillin resistant Staphylococcus aureus
+icd,icd:A41.50,ICD A41.50,"A41.50 | Gram-negative sepsis, unspecified",A41.50,"Gram-negative sepsis, unspecified"
+icd,icd:A41.51,ICD A41.51,A41.51 | Sepsis due to Escherichia coli,A41.51,Sepsis due to Escherichia coli
+icd,icd:A41.9,ICD A41.9,"A41.9 | Sepsis, unspecified organism",A41.9,"Sepsis, unspecified organism"
+icd,icd:A49.0,ICD A49.0,"A49.0 | Staphylococcal infection, unspecified site",A49.0,"Staphylococcal infection, unspecified site"
+icd,icd:A49.1,ICD A49.1,"A49.1 | Streptococcal infection, unspecified site",A49.1,"Streptococcal infection, unspecified site"
+icd,icd:A49.9,ICD A49.9,"A49.9 | Bacterial infection, unspecified",A49.9,"Bacterial infection, unspecified"
+icd,icd:A54.00,ICD A54.00,"A54.00 | Gonorrhoea, unspecified",A54.00,"Gonorrhoea, unspecified"
+icd,icd:A56.00,ICD A56.00,"A56.00 | Chlamydial infection of lower genitourinary tract, unspecified",A56.00,"Chlamydial infection of lower genitourinary tract, unspecified"
+icd,icd:A60.00,ICD A60.00,"A60.00 | Herpesviral infection of urogenital system, unspecified",A60.00,"Herpesviral infection of urogenital system, unspecified"
+icd,icd:A69.20,ICD A69.20,"A69.20 | Lyme disease, unspecified",A69.20,"Lyme disease, unspecified"
+icd,icd:B00.1,ICD B00.1,B00.1 | Herpesviral vesicular dermatitis,B00.1,Herpesviral vesicular dermatitis
+icd,icd:B00.9,ICD B00.9,"B00.9 | Herpesviral infection, unspecified",B00.9,"Herpesviral infection, unspecified"
+icd,icd:B01.9,ICD B01.9,B01.9 | Varicella without complication,B01.9,Varicella without complication
+icd,icd:B02.20,ICD B02.20,"B02.20 | Postherpetic neuralgia, unspecified",B02.20,"Postherpetic neuralgia, unspecified"
+icd,icd:B02.29,ICD B02.29,B02.29 | Other postherpetic nervous system involvement,B02.29,Other postherpetic nervous system involvement
+icd,icd:B02.9,ICD B02.9,B02.9 | Zoster without complications,B02.9,Zoster without complications
+icd,icd:B15.9,ICD B15.9,B15.9 | Acute hepatitis A without hepatic coma,B15.9,Acute hepatitis A without hepatic coma
+icd,icd:B16.9,ICD B16.9,B16.9 | Acute hepatitis B without delta-agent and without hepatic coma,B16.9,Acute hepatitis B without delta-agent and without hepatic coma
+icd,icd:B17.10,ICD B17.10,B17.10 | Acute hepatitis C without hepatic coma,B17.10,Acute hepatitis C without hepatic coma
+icd,icd:B18.2,ICD B18.2,B18.2 | Chronic viral hepatitis C,B18.2,Chronic viral hepatitis C
+icd,icd:B20,ICD B20,B20 | Human immunodeficiency virus (HIV) disease,B20,Human immunodeficiency virus (HIV) disease
+icd,icd:B34.9,ICD B34.9,"B34.9 | Viral infection, unspecified",B34.9,"Viral infection, unspecified"
+icd,icd:B37.0,ICD B37.0,B37.0 | Candidal stomatitis,B37.0,Candidal stomatitis
+icd,icd:B37.3,ICD B37.3,B37.3 | Candidiasis of vulva and vagina,B37.3,Candidiasis of vulva and vagina
+icd,icd:B37.9,ICD B37.9,"B37.9 | Candidiasis, unspecified",B37.9,"Candidiasis, unspecified"
+icd,icd:E03.9,ICD E03.9,"E03.9 | Hypothyroidism, unspecified",E03.9,"Hypothyroidism, unspecified"
+icd,icd:E05.00,ICD E05.00,E05.00 | Thyrotoxicosis with diffuse goitre without thyrotoxic crisis,E05.00,Thyrotoxicosis with diffuse goitre without thyrotoxic crisis
+icd,icd:E05.90,ICD E05.90,"E05.90 | Thyrotoxicosis, unspecified without thyrotoxic crisis",E05.90,"Thyrotoxicosis, unspecified without thyrotoxic crisis"
+icd,icd:E06.3,ICD E06.3,E06.3 | Autoimmune thyroiditis,E06.3,Autoimmune thyroiditis
+icd,icd:E10.10,ICD E10.10,E10.10 | Type 1 diabetes mellitus with ketoacidosis without coma,E10.10,Type 1 diabetes mellitus with ketoacidosis without coma
+icd,icd:E10.11,ICD E10.11,E10.11 | Type 1 diabetes mellitus with ketoacidosis with coma,E10.11,Type 1 diabetes mellitus with ketoacidosis with coma
+icd,icd:E10.649,ICD E10.649,E10.649 | Type 1 diabetes mellitus with hypoglycaemia without coma,E10.649,Type 1 diabetes mellitus with hypoglycaemia without coma
+icd,icd:E10.65,ICD E10.65,E10.65 | Type 1 diabetes mellitus with hyperglycaemia,E10.65,Type 1 diabetes mellitus with hyperglycaemia
+icd,icd:E10.9,ICD E10.9,E10.9 | Type 1 diabetes mellitus without complications,E10.9,Type 1 diabetes mellitus without complications
+icd,icd:E11.10,ICD E11.10,E11.10 | Type 2 diabetes mellitus with ketoacidosis without coma,E11.10,Type 2 diabetes mellitus with ketoacidosis without coma
+icd,icd:E11.649,ICD E11.649,E11.649 | Type 2 diabetes mellitus with hypoglycaemia without coma,E11.649,Type 2 diabetes mellitus with hypoglycaemia without coma
+icd,icd:E11.65,ICD E11.65,E11.65 | Type 2 diabetes mellitus with hyperglycaemia,E11.65,Type 2 diabetes mellitus with hyperglycaemia
+icd,icd:E11.9,ICD E11.9,E11.9 | Type 2 diabetes mellitus without complications,E11.9,Type 2 diabetes mellitus without complications
+icd,icd:E16.0,ICD E16.0,E16.0 | Drug-induced hypoglycaemia without coma,E16.0,Drug-induced hypoglycaemia without coma
+icd,icd:E16.2,ICD E16.2,"E16.2 | Hypoglycaemia, unspecified",E16.2,"Hypoglycaemia, unspecified"
+icd,icd:E21.0,ICD E21.0,E21.0 | Primary hyperparathyroidism,E21.0,Primary hyperparathyroidism
+icd,icd:E27.40,ICD E27.40,"E27.40 | Adrenocortical insufficiency, unspecified",E27.40,"Adrenocortical insufficiency, unspecified"
+icd,icd:E43,ICD E43,E43 | Unspecified severe protein-calorie malnutrition,E43,Unspecified severe protein-calorie malnutrition
+icd,icd:E55.9,ICD E55.9,"E55.9 | Vitamin D deficiency, unspecified",E55.9,"Vitamin D deficiency, unspecified"
+icd,icd:E61.1,ICD E61.1,E61.1 | Iron deficiency,E61.1,Iron deficiency
+icd,icd:E66.01,ICD E66.01,E66.01 | Morbid (severe) obesity due to excess calories,E66.01,Morbid (severe) obesity due to excess calories
+icd,icd:E66.9,ICD E66.9,"E66.9 | Obesity, unspecified",E66.9,"Obesity, unspecified"
+icd,icd:E78.00,ICD E78.00,"E78.00 | Pure hypercholesterolaemia, unspecified",E78.00,"Pure hypercholesterolaemia, unspecified"
+icd,icd:E78.5,ICD E78.5,"E78.5 | Hyperlipidaemia, unspecified",E78.5,"Hyperlipidaemia, unspecified"
+icd,icd:E83.52,ICD E83.52,E83.52 | Hypercalcaemia,E83.52,Hypercalcaemia
+icd,icd:E87.0,ICD E87.0,E87.0 | Hyperosmolality and hypernatraemia,E87.0,Hyperosmolality and hypernatraemia
+icd,icd:E87.1,ICD E87.1,E87.1 | Hypo-osmolality and hyponatraemia,E87.1,Hypo-osmolality and hyponatraemia
+icd,icd:E87.5,ICD E87.5,E87.5 | Hyperkalaemia,E87.5,Hyperkalaemia
+icd,icd:E87.6,ICD E87.6,E87.6 | Hypokalaemia,E87.6,Hypokalaemia
+icd,icd:E87.8,ICD E87.8,E87.8 | Other disorders of electrolyte and fluid balance,E87.8,Other disorders of electrolyte and fluid balance
+icd,icd:L01.00,ICD L01.00,"L01.00 | Impetigo, unspecified",L01.00,"Impetigo, unspecified"
+icd,icd:L02.91,ICD L02.91,"L02.91 | Cutaneous abscess, unspecified",L02.91,"Cutaneous abscess, unspecified"
+icd,icd:L03.90,ICD L03.90,"L03.90 | Cellulitis, unspecified",L03.90,"Cellulitis, unspecified"
+icd,icd:L03.211,ICD L03.211,L03.211 | Cellulitis of face,L03.211,Cellulitis of face
+icd,icd:L04.9,ICD L04.9,"L04.9 | Acute lymphadenitis, unspecified",L04.9,"Acute lymphadenitis, unspecified"
+icd,icd:L05.01,ICD L05.01,L05.01 | Pilonidal cyst with abscess,L05.01,Pilonidal cyst with abscess
+icd,icd:L20.9,ICD L20.9,"L20.9 | Atopic dermatitis, unspecified",L20.9,"Atopic dermatitis, unspecified"
+icd,icd:L23.9,ICD L23.9,"L23.9 | Allergic contact dermatitis, unspecified cause",L23.9,"Allergic contact dermatitis, unspecified cause"
+icd,icd:L27.0,ICD L27.0,L27.0 | Generalised skin eruption due to drugs taken internally,L27.0,Generalised skin eruption due to drugs taken internally
+icd,icd:L30.9,ICD L30.9,"L30.9 | Dermatitis, unspecified",L30.9,"Dermatitis, unspecified"
+icd,icd:L40.0,ICD L40.0,L40.0 | Psoriasis vulgaris,L40.0,Psoriasis vulgaris
+icd,icd:L50.0,ICD L50.0,L50.0 | Allergic urticaria,L50.0,Allergic urticaria
+icd,icd:L50.9,ICD L50.9,"L50.9 | Urticaria, unspecified",L50.9,"Urticaria, unspecified"
+icd,icd:L51.1,ICD L51.1,L51.1 | Stevens-Johnson syndrome,L51.1,Stevens-Johnson syndrome
+icd,icd:L51.2,ICD L51.2,L51.2 | Toxic epidermal necrolysis,L51.2,Toxic epidermal necrolysis
+icd,icd:L52,ICD L52,L52 | Erythema nodosum,L52,Erythema nodosum
+icd,icd:L55.0,ICD L55.0,L55.0 | Sunburn of first degree,L55.0,Sunburn of first degree
+icd,icd:L70.0,ICD L70.0,L70.0 | Acne vulgaris,L70.0,Acne vulgaris
+icd,icd:L72.0,ICD L72.0,L72.0 | Epidermal cyst,L72.0,Epidermal cyst
+icd,icd:L73.2,ICD L73.2,L73.2 | Hidradenitis suppurativa,L73.2,Hidradenitis suppurativa
+icd,icd:L89.90,ICD L89.90,"L89.90 | Pressure ulcer of unspecified site, unspecified stage",L89.90,"Pressure ulcer of unspecified site, unspecified stage"
+icd,icd:H00.01,ICD H00.01,H00.01 | Hordeolum externum,H00.01,Hordeolum externum
+icd,icd:H10.30,ICD H10.30,H10.30 | Unspecified acute conjunctivitis,H10.30,Unspecified acute conjunctivitis
+icd,icd:H10.9,ICD H10.9,H10.9 | Unspecified conjunctivitis,H10.9,Unspecified conjunctivitis
+icd,icd:H16.009,ICD H16.009,"H16.009 | Unspecified corneal ulcer, unspecified eye",H16.009,"Unspecified corneal ulcer, unspecified eye"
+icd,icd:H20.00,ICD H20.00,"H20.00 | Acute and subacute iridocyclitis, unspecified",H20.00,"Acute and subacute iridocyclitis, unspecified"
+icd,icd:H33.009,ICD H33.009,"H33.009 | Unspecified retinal detachment with retinal break, unspecified eye",H33.009,"Unspecified retinal detachment with retinal break, unspecified eye"
+icd,icd:H34.10,ICD H34.10,"H34.10 | Central retinal artery occlusion, unspecified eye",H34.10,"Central retinal artery occlusion, unspecified eye"
+icd,icd:H40.211,ICD H40.211,"H40.211 | Acute angle-closure glaucoma, right eye",H40.211,"Acute angle-closure glaucoma, right eye"
+icd,icd:H47.01,ICD H47.01,H47.01 | Ischaemic optic neuropathy,H47.01,Ischaemic optic neuropathy
+icd,icd:H57.10,ICD H57.10,"H57.10 | Ocular pain, unspecified eye",H57.10,"Ocular pain, unspecified eye"
+icd,icd:H60.339,ICD H60.339,"H60.339 | Swimmer's ear, unspecified ear",H60.339,"Swimmer's ear, unspecified ear"
+icd,icd:H60.9,ICD H60.9,H60.9 | Unspecified otitis externa,H60.9,Unspecified otitis externa
+icd,icd:H65.00,ICD H65.00,"H65.00 | Acute serous otitis media, unspecified ear",H65.00,"Acute serous otitis media, unspecified ear"
+icd,icd:H65.90,ICD H65.90,H65.90 | Unspecified nonsuppurative otitis media,H65.90,Unspecified nonsuppurative otitis media
+icd,icd:H66.001,ICD H66.001,"H66.001 | Acute suppurative otitis media without spontaneous rupture of ear drum, right ear",H66.001,"Acute suppurative otitis media without spontaneous rupture of ear drum, right ear"
+icd,icd:H66.9,ICD H66.9,"H66.9 | Otitis media, unspecified",H66.9,"Otitis media, unspecified"
+icd,icd:H70.001,ICD H70.001,"H70.001 | Acute mastoiditis without complications, right ear",H70.001,"Acute mastoiditis without complications, right ear"
+icd,icd:H81.09,ICD H81.09,"H81.09 | Meniere's disease, unspecified ear",H81.09,"Meniere's disease, unspecified ear"
+icd,icd:H81.391,ICD H81.391,"H81.391 | Other peripheral vertigo, right ear",H81.391,"Other peripheral vertigo, right ear"
+icd,icd:H90.3,ICD H90.3,"H90.3 | Sensorineural hearing loss, bilateral",H90.3,"Sensorineural hearing loss, bilateral"
+icd,icd:H92.01,ICD H92.01,"H92.01 | Otalgia, right ear",H92.01,"Otalgia, right ear"
+icd,icd:H93.11,ICD H93.11,"H93.11 | Tinnitus, right ear",H93.11,"Tinnitus, right ear"
+icd,icd:D50.0,ICD D50.0,D50.0 | Iron deficiency anaemia secondary to blood loss (chronic),D50.0,Iron deficiency anaemia secondary to blood loss (chronic)
+icd,icd:D50.9,ICD D50.9,"D50.9 | Iron deficiency anaemia, unspecified",D50.9,"Iron deficiency anaemia, unspecified"
+icd,icd:D51.0,ICD D51.0,D51.0 | Vitamin B12 deficiency anaemia due to intrinsic factor deficiency,D51.0,Vitamin B12 deficiency anaemia due to intrinsic factor deficiency
+icd,icd:D57.00,ICD D57.00,"D57.00 | Hb-SS disease with crisis, unspecified",D57.00,"Hb-SS disease with crisis, unspecified"
+icd,icd:D57.1,ICD D57.1,D57.1 | Sickle-cell disease without crisis,D57.1,Sickle-cell disease without crisis
+icd,icd:D62,ICD D62,D62 | Acute posthemorrhagic anaemia,D62,Acute posthemorrhagic anaemia
+icd,icd:D64.9,ICD D64.9,"D64.9 | Anaemia, unspecified",D64.9,"Anaemia, unspecified"
+icd,icd:D65,ICD D65,D65 | Disseminated intravascular coagulation,D65,Disseminated intravascular coagulation
+icd,icd:D68.0,ICD D68.0,D68.0 | Von Willebrand's disease,D68.0,Von Willebrand's disease
+icd,icd:D69.3,ICD D69.3,D69.3 | Immune thrombocytopenic purpura,D69.3,Immune thrombocytopenic purpura
+icd,icd:D69.6,ICD D69.6,"D69.6 | Thrombocytopenia, unspecified",D69.6,"Thrombocytopenia, unspecified"
+icd,icd:D70.9,ICD D70.9,"D70.9 | Neutropenia, unspecified",D70.9,"Neutropenia, unspecified"
+icd,icd:D72.829,ICD D72.829,"D72.829 | Elevated white blood cell count, unspecified",D72.829,"Elevated white blood cell count, unspecified"
+icd,icd:D84.9,ICD D84.9,"D84.9 | Immunodeficiency, unspecified",D84.9,"Immunodeficiency, unspecified"
+icd,icd:S06.0X1A,ICD S06.0X1A,"S06.0X1A | Concussion with loss of consciousness of 30 minutes or less, initial encounter",S06.0X1A,"Concussion with loss of consciousness of 30 minutes or less, initial encounter"
+icd,icd:S06.0X9A,ICD S06.0X9A,"S06.0X9A | Concussion with loss of consciousness of unspecified duration, initial encounter",S06.0X9A,"Concussion with loss of consciousness of unspecified duration, initial encounter"
+icd,icd:S09.90XA,ICD S09.90XA,"S09.90XA | Unspecified injury of head, initial encounter",S09.90XA,"Unspecified injury of head, initial encounter"
+icd,icd:S22.000A,ICD S22.000A,"S22.000A | Wedge compression fracture of unspecified thoracic vertebra, initial encounter",S22.000A,"Wedge compression fracture of unspecified thoracic vertebra, initial encounter"
+icd,icd:S32.000A,ICD S32.000A,"S32.000A | Wedge compression fracture of unspecified lumbar vertebra, initial encounter",S32.000A,"Wedge compression fracture of unspecified lumbar vertebra, initial encounter"
+icd,icd:S39.012A,ICD S39.012A,"S39.012A | Strain of muscle, fascia and tendon of lower back, initial encounter",S39.012A,"Strain of muscle, fascia and tendon of lower back, initial encounter"
+icd,icd:S42.001A,ICD S42.001A,"S42.001A | Fracture of unspecified part of clavicle, right side, initial encounter",S42.001A,"Fracture of unspecified part of clavicle, right side, initial encounter"
+icd,icd:S42.201A,ICD S42.201A,"S42.201A | Unspecified fracture of upper end of right humerus, initial encounter",S42.201A,"Unspecified fracture of upper end of right humerus, initial encounter"
+icd,icd:S52.501A,ICD S52.501A,"S52.501A | Fracture of lower end of radius, right, initial encounter",S52.501A,"Fracture of lower end of radius, right, initial encounter"
+icd,icd:S61.409A,ICD S61.409A,"S61.409A | Unspecified open wound of unspecified finger without damage to nail, initial encounter",S61.409A,"Unspecified open wound of unspecified finger without damage to nail, initial encounter"
+icd,icd:S62.000A,ICD S62.000A,"S62.000A | Fracture of navicular bone of right wrist, displaced, initial encounter",S62.000A,"Fracture of navicular bone of right wrist, displaced, initial encounter"
+icd,icd:S72.001A,ICD S72.001A,"S72.001A | Fracture of unspecified part of neck of right femur, initial encounter",S72.001A,"Fracture of unspecified part of neck of right femur, initial encounter"
+icd,icd:S72.141A,ICD S72.141A,"S72.141A | Displaced intertrochanteric fracture of right femur, initial encounter",S72.141A,"Displaced intertrochanteric fracture of right femur, initial encounter"
+icd,icd:S82.201A,ICD S82.201A,"S82.201A | Unspecified fracture of shaft of right tibia, initial encounter",S82.201A,"Unspecified fracture of shaft of right tibia, initial encounter"
+icd,icd:S92.001A,ICD S92.001A,"S92.001A | Fracture of calcaneus, right foot, initial encounter",S92.001A,"Fracture of calcaneus, right foot, initial encounter"
+icd,icd:T07,ICD T07,T07 | Unspecified multiple injuries,T07,Unspecified multiple injuries
+icd,icd:T14.90,ICD T14.90,"T14.90 | Injury, unspecified",T14.90,"Injury, unspecified"
+icd,icd:T20.00XA,ICD T20.00XA,"T20.00XA | Burn of unspecified degree of head, face and neck, initial encounter",T20.00XA,"Burn of unspecified degree of head, face and neck, initial encounter"
+icd,icd:T31.0,ICD T31.0,T31.0 | Burns involving less than 10% of body surface,T31.0,Burns involving less than 10% of body surface
+icd,icd:T36.0X1A,ICD T36.0X1A,"T36.0X1A | Poisoning by penicillins, accidental, initial encounter",T36.0X1A,"Poisoning by penicillins, accidental, initial encounter"
+icd,icd:T39.1X1A,ICD T39.1X1A,"T39.1X1A | Poisoning by 4-Aminophenol derivatives (paracetamol), accidental, initial encounter",T39.1X1A,"Poisoning by 4-Aminophenol derivatives (paracetamol), accidental, initial encounter"
+icd,icd:T40.0X1A,ICD T40.0X1A,"T40.0X1A | Poisoning by opium, accidental, initial encounter",T40.0X1A,"Poisoning by opium, accidental, initial encounter"
+icd,icd:T40.1X1A,ICD T40.1X1A,"T40.1X1A | Poisoning by heroin, accidental, initial encounter",T40.1X1A,"Poisoning by heroin, accidental, initial encounter"
+icd,icd:T40.2X1A,ICD T40.2X1A,"T40.2X1A | Poisoning by other opioids, accidental, initial encounter",T40.2X1A,"Poisoning by other opioids, accidental, initial encounter"
+icd,icd:T40.4X1A,ICD T40.4X1A,"T40.4X1A | Poisoning by other synthetic narcotics, accidental, initial encounter",T40.4X1A,"Poisoning by other synthetic narcotics, accidental, initial encounter"
+icd,icd:T42.4X1A,ICD T42.4X1A,"T42.4X1A | Poisoning by benzodiazepines, accidental, initial encounter",T42.4X1A,"Poisoning by benzodiazepines, accidental, initial encounter"
+icd,icd:T43.011A,ICD T43.011A,"T43.011A | Poisoning by tricyclic antidepressants, accidental, initial encounter",T43.011A,"Poisoning by tricyclic antidepressants, accidental, initial encounter"
+icd,icd:T45.511A,ICD T45.511A,"T45.511A | Poisoning by anticoagulants, accidental, initial encounter",T45.511A,"Poisoning by anticoagulants, accidental, initial encounter"
+icd,icd:T50.901A,ICD T50.901A,"T50.901A | Poisoning by unspecified drugs, accidental, initial encounter",T50.901A,"Poisoning by unspecified drugs, accidental, initial encounter"
+icd,icd:T51.0X1A,ICD T51.0X1A,"T51.0X1A | Toxic effect of ethanol, accidental, initial encounter",T51.0X1A,"Toxic effect of ethanol, accidental, initial encounter"
+icd,icd:T58.01XA,ICD T58.01XA,"T58.01XA | Toxic effect of carbon monoxide from motor vehicle exhaust, accidental, initial encounter",T58.01XA,"Toxic effect of carbon monoxide from motor vehicle exhaust, accidental, initial encounter"
+icd,icd:T78.00XA,ICD T78.00XA,"T78.00XA | Anaphylactic reaction due to unspecified food, initial encounter",T78.00XA,"Anaphylactic reaction due to unspecified food, initial encounter"
+icd,icd:T78.2XXA,ICD T78.2XXA,"T78.2XXA | Anaphylactic shock, unspecified, initial encounter",T78.2XXA,"Anaphylactic shock, unspecified, initial encounter"
+icd,icd:T78.40XA,ICD T78.40XA,"T78.40XA | Allergy, unspecified, initial encounter",T78.40XA,"Allergy, unspecified, initial encounter"
+icd,icd:T79.4XXA,ICD T79.4XXA,"T79.4XXA | Traumatic shock, initial encounter",T79.4XXA,"Traumatic shock, initial encounter"
+icd,icd:O03.9,ICD O03.9,O03.9 | Complete or unspecified spontaneous abortion without complication,O03.9,Complete or unspecified spontaneous abortion without complication
+icd,icd:O13.3,ICD O13.3,"O13.3 | Gestational hypertension without significant proteinuria, third trimester",O13.3,"Gestational hypertension without significant proteinuria, third trimester"
+icd,icd:O14.03,ICD O14.03,"O14.03 | Mild to moderate pre-eclampsia, third trimester",O14.03,"Mild to moderate pre-eclampsia, third trimester"
+icd,icd:O14.10,ICD O14.10,"O14.10 | Severe pre-eclampsia, unspecified trimester",O14.10,"Severe pre-eclampsia, unspecified trimester"
+icd,icd:O20.0,ICD O20.0,O20.0 | Threatened abortion,O20.0,Threatened abortion
+icd,icd:O21.0,ICD O21.0,O21.0 | Mild hyperemesis gravidarum,O21.0,Mild hyperemesis gravidarum
+icd,icd:O21.1,ICD O21.1,O21.1 | Hyperemesis gravidarum with metabolic disturbance,O21.1,Hyperemesis gravidarum with metabolic disturbance
+icd,icd:O23.10,ICD O23.10,"O23.10 | Infections of bladder in pregnancy, unspecified trimester",O23.10,"Infections of bladder in pregnancy, unspecified trimester"
+icd,icd:O42.00,ICD O42.00,"O42.00 | Premature rupture of membranes, onset of labour within 24 hours of rupture",O42.00,"Premature rupture of membranes, onset of labour within 24 hours of rupture"
+icd,icd:O60.00,ICD O60.00,"O60.00 | Preterm labour without delivery, unspecified trimester",O60.00,"Preterm labour without delivery, unspecified trimester"
+icd,icd:C18.9,ICD C18.9,"C18.9 | Malignant neoplasm of colon, unspecified",C18.9,"Malignant neoplasm of colon, unspecified"
+icd,icd:C34.10,ICD C34.10,"C34.10 | Malignant neoplasm of upper lobe, bronchus or lung, unspecified side",C34.10,"Malignant neoplasm of upper lobe, bronchus or lung, unspecified side"
+icd,icd:C50.912,ICD C50.912,C50.912 | Malignant neoplasm of unspecified site of left female breast,C50.912,Malignant neoplasm of unspecified site of left female breast
+icd,icd:C61,ICD C61,C61 | Malignant neoplasm of prostate,C61,Malignant neoplasm of prostate
+icd,icd:C67.9,ICD C67.9,"C67.9 | Malignant neoplasm of bladder, unspecified",C67.9,"Malignant neoplasm of bladder, unspecified"
+icd,icd:C71.9,ICD C71.9,"C71.9 | Malignant neoplasm of brain, unspecified",C71.9,"Malignant neoplasm of brain, unspecified"
+icd,icd:C79.51,ICD C79.51,C79.51 | Secondary malignant neoplasm of bone,C79.51,Secondary malignant neoplasm of bone
+icd,icd:C80.1,ICD C80.1,"C80.1 | Malignant (primary) neoplasm, unspecified",C80.1,"Malignant (primary) neoplasm, unspecified"
+icd,icd:C85.10,ICD C85.10,"C85.10 | Unspecified B-cell lymphoma, unspecified site",C85.10,"Unspecified B-cell lymphoma, unspecified site"
+icd,icd:C91.00,ICD C91.00,C91.00 | Acute lymphoblastic leukaemia not having achieved remission,C91.00,Acute lymphoblastic leukaemia not having achieved remission
+icd,icd:C92.00,ICD C92.00,"C92.00 | Acute myeloblastic leukaemia, not having achieved remission",C92.00,"Acute myeloblastic leukaemia, not having achieved remission"
+icd,icd:Z03.89,ICD Z03.89,Z03.89 | Encounter for observation for other suspected diseases and conditions ruled out,Z03.89,Encounter for observation for other suspected diseases and conditions ruled out
+icd,icd:Z04.1,ICD Z04.1,Z04.1 | Encounter for examination and observation following transport accident,Z04.1,Encounter for examination and observation following transport accident
+icd,icd:Z23,ICD Z23,Z23 | Encounter for immunisation,Z23,Encounter for immunisation
+icd,icd:Z51.11,ICD Z51.11,Z51.11 | Encounter for antineoplastic chemotherapy,Z51.11,Encounter for antineoplastic chemotherapy
+icd,icd:Z79.01,ICD Z79.01,Z79.01 | Long-term use of anticoagulants,Z79.01,Long-term use of anticoagulants
+icd,icd:Z79.4,ICD Z79.4,Z79.4 | Long-term use of insulin,Z79.4,Long-term use of insulin
+icd,icd:Z87.891,ICD Z87.891,Z87.891 | Personal history of nicotine dependence,Z87.891,Personal history of nicotine dependence
+icd,icd:Z91.010,ICD Z91.010,Z91.010 | Allergy to peanuts,Z91.010,Allergy to peanuts
+icd,icd:Z91.013,ICD Z91.013,Z91.013 | Allergy to seafood,Z91.013,Allergy to seafood
+icd,icd:Z99.11,ICD Z99.11,Z99.11 | Dependence on respirator,Z99.11,Dependence on respirator

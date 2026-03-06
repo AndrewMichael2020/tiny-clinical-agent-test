@@ -20,8 +20,10 @@ A proof-of-concept demonstrating that a **sub-2 GB LLM running entirely on CPU**
 
 | Step | Script | What it does |
 |------|--------|--------------|
-| 1 | `01_build_fake_kb_lancedb.py` | Embeds a synthetic knowledge base (hospital SQL schema + ~600 ICD-10 codes) and persists it to a local [LanceDB](https://lancedb.github.io/lancedb/) vector store. |
-| 2 | `02_rag_llama32_edge_tests.py` | Runs 9 structured edge-test cases through the full RAG pipeline: embed → retrieve → prompt → generate → parse → validate JSON. |
+| 1a | `01_build_fake_kb_lancedb.py` | Generates synthetic KB docs (hospital SQL schema + ~600 ICD-10 codes) and **writes them to `fake_kb_data.csv`**. |
+| 1b | `01_build_fake_kb_lancedb.py` | Reads back the CSV, flushes the existing LanceDB table, embeds all docs, and re-ingests into [LanceDB](https://lancedb.github.io/lancedb/). |
+| 2 | `02_rag_llama32_edge_tests.py` | Runs 9 structured edge-test cases through the full RAG pipeline: embed → retrieve → prompt → generate → parse → validate JSON. Auto-saves results to `results/rag_results_<timestamp>.json`. |
+| — | `run_pipeline.py` | **One-command runner** that chains steps 1 and 2 end-to-end. |
 
 ---
 
@@ -36,6 +38,9 @@ Chief Complaint (free text)
         │
         ▼
   LanceDB cosine search ◄── KB: ~600 ICD-10 codes + 3 SQL schema docs
+        │                         ▲
+        │                         │  ingested from fake_kb_data.csv
+        │                         │  (flushed + re-embedded on each build)
         │  top-k retrieved chunks
         ▼
   Prompt builder
@@ -49,6 +54,9 @@ Chief Complaint (free text)
         │
         ▼
   { candidate_icd_codes, confidence, flags, … }
+        │
+        ▼
+  results/rag_results_<timestamp>.json
 ```
 
 ---
@@ -69,6 +77,16 @@ Four profiles are defined and benchmarked. Switch with `--model <profile>`, the 
 ---
 
 ## Knowledge Base (`01_build_fake_kb_lancedb.py`)
+
+The builder now follows a **CSV-first pipeline**:
+
+1. **Generate** — `build_fake_schema_docs()` + `build_fake_icd_docs()` produce in-memory dicts.
+2. **Persist to CSV** — `write_docs_to_csv()` serialises all docs to `fake_kb_data.csv` (columns: `doc_type`, `doc_id`, `title`, `text`, `icd_code`, `icd_desc`).
+3. **Reload from CSV** — `read_docs_from_csv()` reads the CSV back, making the CSV the authoritative source for downstream ingestion.
+4. **Flush** — `flush_lancedb_table()` drops the existing `kb_docs` table for a clean slate.
+5. **Embed + ingest** — Docs are vectorised with `all-MiniLM-L6-v2` and written to `lancedb_store/`.
+
+> Override paths via env vars: `KB_CSV_PATH` (CSV output), `LANCEDB_DIR` (store directory).
 
 Two document types are embedded and stored in `./lancedb_store`:
 
@@ -191,26 +209,50 @@ cp .env.example .env
 # Edit .env — set HF_TOKEN if using a gated model, adjust HF_HOME to your cache path
 ```
 
-### 3 — Build the vector store (once)
+### 3 — Build the vector store
 
 ```bash
 python 01_build_fake_kb_lancedb.py
 ```
 
-This creates `./lancedb_store/kb_docs.lance` and is safe to re-run (overwrites).
+This runs the full CSV-first pipeline:
+- Generates 605 KB docs (3 schema + 602 ICD-10)
+- Writes them to `fake_kb_data.csv`
+- Flushes any existing `kb_docs` table from LanceDB
+- Embeds all docs and re-ingests into `./lancedb_store/`
 
 ### 4 — Run the edge tests
 
 ```bash
-# Default profile (llama32_1b_instruct)
+# Default profile (llama32_1b_instruct) — saves JSON automatically
 python -u 02_rag_llama32_edge_tests.py
 
 # Ungated alternative (no HF token needed)
 python -u 02_rag_llama32_edge_tests.py --model danube3_500m
 
+# Specify custom results path
+python -u 02_rag_llama32_edge_tests.py --save-results my_results.json
+
 # Via environment variable
 MODEL_PROFILE=gemma3_1b python -u 02_rag_llama32_edge_tests.py
 ```
+
+Results are always persisted to `results/rag_results_<YYYYMMDD_HHMMSS>.json` (unless overridden with `--save-results`).
+
+### 5 — Run the full pipeline in one command
+
+```bash
+# Uses active_profile from model_config.yaml
+python run_pipeline.py
+
+# Override model
+python run_pipeline.py --model danube3_500m
+
+# Override output path
+python run_pipeline.py --save-results path/to/output.json
+```
+
+`run_pipeline.py` chains steps 3 and 4: build KB from CSV → ingest LanceDB → run RAG tests → save JSON.
 
 ---
 
@@ -229,11 +271,11 @@ MODEL_PROFILE=gemma3_1b python -u 02_rag_llama32_edge_tests.py
 
 ## Extending This
 
-- **Expand the ICD seed set** — replace `build_fake_icd_docs()` with a full ICD-10 CSV import (CMS tabular file or WHO release).
-- **Add real EMR schema** — extend `build_fake_schema_docs()` with your actual table definitions.
-- **Swap the generator** — any `AutoModelForCausalLM`-compatible model works; add a new profile block to `model_config.yaml`.
-- **Persist results** — write validated JSON objects to `dbo.Diagnosis` using the `sql_fields_to_store` list.
-- **Batch mode** — wrap `run_case()` in a loop over a CSV of real chief complaints.
+- **Swap in real data** — Replace `build_fake_icd_docs()` with a reader for a real ICD-10 CSV (CMS tabular file or WHO release); it will be automatically written to `fake_kb_data.csv` and ingested.
+- **Add real EMR schema** — Extend `build_fake_schema_docs()` with your actual `CREATE TABLE` definitions.
+- **Swap the generator** — Any `AutoModelForCausalLM`-compatible model works; add a new profile block to `model_config.yaml`.
+- **Persist results** — The `results/rag_results_<timestamp>.json` file includes full `case_outputs` per case; feed those into your pipeline or BI tool.
+- **Batch mode** — Wrap `run_case()` in a loop over a CSV of real chief complaints, or extend `build_test_cases()` to load from a CSV.
 
 ---
 
@@ -241,10 +283,13 @@ MODEL_PROFILE=gemma3_1b python -u 02_rag_llama32_edge_tests.py
 
 ```
 .
-├── 01_build_fake_kb_lancedb.py   # KB builder — embeds ICD-10 codes + schema into LanceDB
-├── 02_rag_llama32_edge_tests.py  # RAG pipeline + 9-case edge-test harness
+├── 01_build_fake_kb_lancedb.py   # KB builder: generate → CSV → flush → embed → LanceDB
+├── 02_rag_llama32_edge_tests.py  # RAG pipeline + 9-case edge-test harness (auto-saves JSON)
+├── run_pipeline.py               # One-command runner: KB build → RAG tests → JSON results
+├── fake_kb_data.csv              # Generated KB docs (CSV intermediary; auto-created by step 1)
 ├── model_config.yaml             # Model profiles (switch without code changes)
-├── lancedb_store/                # Persisted vector store (committed; ~small)
+├── lancedb_store/                # Persisted vector store (flushed + rebuilt by step 1)
+├── results/                      # Per-run JSON results (created by step 2 / run_pipeline.py)
 ├── MODEL_COMPARISON_REPORT.md    # Benchmark results across all four model profiles
 ├── TEST_REPORT.md                # Detailed per-case pass/fail output
 ├── .env.example                  # Environment variable template (copy → .env)

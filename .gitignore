@@ -29,6 +29,11 @@ log_*.txt
 cpu_monitor.log
 /tmp/
 
+*.txn
+*.lance
+*.manifest
+/lancedb_store/
+
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]

@@ -4,15 +4,20 @@ from __future__ import annotations
 from dotenv import load_dotenv
 load_dotenv()
 
+import csv
+import io
 import os
 import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import lancedb
 from sentence_transformers import SentenceTransformer
+
+# Optional columns that only exist on ICD rows (absent on schema rows)
+_ICD_EXTRA_COLS = ("icd_code", "icd_desc")
 
 
 def log(msg: str) -> None:
@@ -711,6 +716,53 @@ def build_fake_icd_docs() -> List[Dict[str, Any]]:
     return out
 
 
+_CSV_COLS = ["doc_type", "doc_id", "title", "text", "icd_code", "icd_desc"]
+
+
+def write_docs_to_csv(docs: List[Dict[str, Any]], csv_path: Path) -> None:
+    """Serialize the KB documents to a CSV file (no vectors — added later)."""
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    with csv_path.open("w", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=_CSV_COLS, extrasaction="ignore")
+        writer.writeheader()
+        for doc in docs:
+            row = {col: doc.get(col, "") for col in _CSV_COLS}
+            writer.writerow(row)
+    log(f"CSV written: {csv_path}  ({len(docs)} rows)")
+
+
+def read_docs_from_csv(csv_path: Path) -> List[Dict[str, Any]]:
+    """Read KB documents back from CSV; returns list of dicts (no vectors)."""
+    docs: List[Dict[str, Any]] = []
+    with csv_path.open(newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            doc: Dict[str, Any] = {
+                "doc_type": row["doc_type"],
+                "doc_id":   row["doc_id"],
+                "title":    row["title"],
+                "text":     row["text"],
+            }
+            # Preserve ICD-specific columns only when populated
+            if row.get("icd_code"):
+                doc["icd_code"] = row["icd_code"]
+            if row.get("icd_desc"):
+                doc["icd_desc"] = row["icd_desc"]
+            docs.append(doc)
+    log(f"CSV loaded: {csv_path}  ({len(docs)} rows)")
+    return docs
+
+
+def flush_lancedb_table(db_dir: Path, table_name: str) -> None:
+    """Drop the table from LanceDB if it exists (clean slate before re-ingestion)."""
+    db = lancedb.connect(str(db_dir))
+    existing = db.table_names()
+    if table_name in existing:
+        db.drop_table(table_name)
+        log(f"Flushed existing LanceDB table: {table_name}")
+    else:
+        log(f"Table '{table_name}' did not exist — nothing to flush")
+
+
 def main() -> int:
     t0 = time.perf_counter()
     log("START 01_build_fake_kb_lancedb.py")
@@ -724,27 +776,35 @@ def main() -> int:
     db_dir.mkdir(parents=True, exist_ok=True)
     table_name = "kb_docs"
 
-    log(f"Using LanceDB dir: {db_dir}")
-    log(f"Table: {table_name}")
+    # ── Step 1: generate fake KB docs and persist to CSV ─────────────────────
+    csv_path = Path(os.environ.get("KB_CSV_PATH", str(db_dir.parent / "fake_kb_data.csv")))
+    log("STEP 1 — Generating fake KB documents → CSV")
+    raw_docs = build_fake_schema_docs() + build_fake_icd_docs()
+    log(f"  Generated {len(raw_docs)} docs ({sum(1 for d in raw_docs if d['doc_type']=='schema')} schema, "
+        f"{sum(1 for d in raw_docs if d['doc_type']=='icd')} ICD)")
+    write_docs_to_csv(raw_docs, csv_path)
 
-    log(f"Loading embedder: sentence-transformers/all-MiniLM-L6-v2  (KB: ~600 ICD-10 codes + schema docs)")
+    # ── Step 2: ingest CSV → embed → LanceDB (flush first) ───────────────────
+    log("STEP 2 — Loading docs from CSV")
+    docs = read_docs_from_csv(csv_path)
+
+    log("STEP 3 — Flushing existing LanceDB table")
+    flush_lancedb_table(db_dir, table_name)
+
+    log(f"STEP 4 — Embedding {len(docs)} docs with all-MiniLM-L6-v2")
     t_emb = time.perf_counter()
     embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
-    log(f"Embedder ready in {time.perf_counter() - t_emb:.2f}s")
-
-    docs = build_fake_schema_docs() + build_fake_icd_docs()
-    log(f"Docs to embed: {len(docs)}")
+    log(f"  Embedder ready in {time.perf_counter() - t_emb:.2f}s")
 
     texts = [d["text"] for d in docs]
-    log("Embedding docs...")
     t_vec = time.perf_counter()
     vecs = embedder.encode(texts, batch_size=64, normalize_embeddings=True, show_progress_bar=False)
-    log(f"Embedding done in {time.perf_counter() - t_vec:.2f}s")
+    log(f"  Embedding done in {time.perf_counter() - t_vec:.2f}s")
 
     for i in range(len(docs)):
         docs[i]["vector"] = vecs[i].tolist()
 
-    log("Writing to LanceDB (overwrite)...")
+    log("STEP 5 — Writing to LanceDB")
     db = lancedb.connect(str(db_dir))
     db.create_table(table_name, data=docs, mode="overwrite")
 

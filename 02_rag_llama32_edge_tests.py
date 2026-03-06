@@ -781,11 +781,16 @@ def generate_llamacpp(llm: Any, messages: List[Dict[str, str]], profile: Dict[st
 
 
 def main() -> int:
+    _default_results_path = (
+        Path(__file__).resolve().parent / "results"
+        / f"rag_results_{time.strftime('%Y%m%d_%H%M%S')}.json"
+    )
     parser = argparse.ArgumentParser(description="RAG edge tests")
     parser.add_argument("--model", metavar="PROFILE",
                         help="Model profile name from model_config.yaml (overrides active_profile)")
     parser.add_argument("--save-results", metavar="PATH",
-                        help="Save per-case results as JSON to this path")
+                        default=str(_default_results_path),
+                        help="Save per-case results as JSON to this path (default: results/rag_results_<timestamp>.json)")
     args = parser.parse_args()
 
     t0 = time.perf_counter()
@@ -838,6 +843,7 @@ def main() -> int:
     log(f"Running {len(cases)} cases")
 
     results: Dict[str, str] = {}
+    case_outputs: Dict[str, Any] = {}
 
     for row in cases:
         case_id = row["case_id"]
@@ -860,6 +866,7 @@ def main() -> int:
                 log(f"  VALIDATE: FAIL — {e}")
             log("FINAL JSON:")
             print(json.dumps(obj, indent=2, ensure_ascii=False), flush=True)
+            case_outputs[case_id] = obj
             continue
 
         # Embedding query (cap at 500 chars)
@@ -977,6 +984,7 @@ def main() -> int:
                 log("  VALIDATE: PASS")
             log("FINAL JSON:")
             print(json.dumps(obj, indent=2, ensure_ascii=False), flush=True)
+            case_outputs[case_id] = obj
 
     # Summary
     log("")
@@ -993,7 +1001,7 @@ def main() -> int:
     dt = time.perf_counter() - t0
     log(f"DONE in {dt:.2f}s")
 
-    # Save machine-readable results if requested
+    # Save machine-readable results (always, since --save-results has a default path)
     if args.save_results:
         save_path = Path(args.save_results)
         save_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1005,8 +1013,9 @@ def main() -> int:
             "total":        len(cases),
             "runtime_s":    round(dt, 2),
             "cases":        results,
+            "case_outputs": case_outputs,
         }
-        save_path.write_text(json.dumps(out_data, indent=2))
+        save_path.write_text(json.dumps(out_data, indent=2, ensure_ascii=False))
         log(f"Results saved to: {save_path}")
 
     return 0 if passed == len(cases) else 1
