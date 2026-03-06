@@ -1,75 +1,168 @@
 
-# RAG + Tiny-LLM Edge Tests — ICD-10 Normalization
+# RAG + Tiny LLM Edge Tests — ICD-10 Clinical Code Normalization
 
-This repository is a minimal, local proof-of-concept that demonstrates a Retrieval-Augmented Generation (RAG) pipeline which: embed → retrieve → prompt → generate → validate. It converts free-text ED chief complaints into candidate ICD-10 codes using small, CPU-runnable models and a local LanceDB vector store.
+**Generated:** 2026-03-05
 
-Key goals:
-- Fully local: no cloud APIs required for the core pipeline.
-- CPU-friendly: supports tiny/quantized models for edge/CI use.
-- Reproducible test-suite: nine curated edge cases exercise safety, parsing and grounding.
+This repository contains a minimal proof-of-concept showing how a small LLM running entirely on CPU can normalize emergency-department chief complaints into candidate ICD-10 codes using a Retrieval-Augmented Generation (RAG) pipeline. The focus is on reproducible, local execution (no cloud API calls required) and defensive validation to reduce hallucinations.
 
-**Quick links**
-- `01_build_fake_kb_lancedb.py` — build a synthetic LanceDB KB (ICD seed set + schema docs)
-- `02_rag_llama32_edge_tests.py` — run the 9-case RAG + validation test harness
+---
 
-Repository layout
-- `01_build_fake_kb_lancedb.py` — create and persist a small LanceDB vector store
-- `02_rag_llama32_edge_tests.py` — orchestrates embed → retrieve → prompt → generate → validate
-- `model_config.yaml` — model profile definitions and runtime flags
-- `lancedb_store/` — local LanceDB files (ignored by `.gitignore`)
+## 1. What this does
 
-Requirements
-- Python 3.10+ (3.12 tested in CI)
-- Recommended packages (install with `pip`):
+The codebase implements a simple pipeline:
 
-```bash
-pip install -r requirements.txt
+- Embed the incoming chief complaint with `sentence-transformers/all-MiniLM-L6-v2` (CPU).
+- Retrieve relevant ICD-10 and schema docs from a local LanceDB vector store.
+- Build a structured few-shot prompt containing grounding context and behavior examples.
+- Generate structured JSON output from a small generator model (HF or llama-cpp-backed GGUF).
+- Post-process and validate the JSON against the retrieved context, applying confidence floors and normalization fixes.
+
+Two scripts are provided:
+
+- `01_build_fake_kb_lancedb.py`: build a synthetic LanceDB KB (hospital schema stubs + ~600 ICD-10 seed docs).
+- `02_rag_llama32_edge_tests.py`: run a 9-case edge test suite exercising happy-path, adversarial and boundary behaviors.
+
+---
+
+## 2. System & Test Context
+
+See [MODEL_COMPARISON_REPORT.md](MODEL_COMPARISON_REPORT.md) for full run metadata (hardware, timings, models tested, and behavior notes). This work was executed on Ubuntu 24.04.3 LTS with CPU-only inference.
+
+---
+
+## 3. Architecture
+
+ASCII overview:
+
+```
+Chief Complaint (text)
+	  │
+	  ▼
+  Embedder (all-MiniLM-L6-v2, CPU)
+	  │
+	  ▼
+  LanceDB vector search  ←── KB: ICD-10 codes + DB schema docs
+	  │
+	  ▼
+  Prompt builder (structured, few-shot behavior examples)
+	  │
+	  ▼
+  Generator (HF / gguf via llama-cpp-python)
+	  │
+	  ▼
+  Structured JSON output ── validated ──► ICD candidates + confidence + flags
 ```
 
-If you don't have a `requirements.txt` in this repo, install:
+Key components:
+
+- Embedder: `sentence-transformers/all-MiniLM-L6-v2` (CPU-only, small, fast).
+- Vector DB: LanceDB storing embedded ICD docs and lightweight schema examples.
+- Generator: flexible backend — HuggingFace Transformers (fp16) or `llama-cpp-python` (GGUF Q4_K_M) for quantized local runs.
+- Validation: ensures required keys, confidence range, and that output ICDs appear in retrieved context.
+
+---
+
+## 4. Knowledge base (details)
+
+`01_build_fake_kb_lancedb.py` creates two document families:
+
+- Hospital schema stubs (`dbo.Patient`, `dbo.Encounter`, `dbo.Diagnosis`).
+- ICD-10 seed documents (~600 codes) spanning major clinical systems (R00–R99, I10–I99, J00–J99, K00–K95, N00–N99, etc.).
+
+Embeddings are generated with the MiniLM model and written to `lancedb_store/` by default (edit `db_dir` in the scripts to change the path).
+
+---
+
+## 5. Test suite (9 cases)
+
+The test harness runs these curated cases to validate behavior:
+
+- 3 GREEN (happy path clinical inputs)
+- 3 RED (adversarial / invalid inputs: empty, nonsense, prompt-injection)
+- 3 EDGE (boundary conditions: already-containing-code, conflicting symptoms, very long input)
+
+Each case produces a validated JSON object with keys such as `input_text`, `normalized_chief_complaint`, `candidate_icd_codes`, `candidate_icd_rationales`, `confidence`, `flags`, and `model_used`.
+
+Validation rules include:
+
+- All required keys present.
+- `candidate_icd_codes` must be drawn from retrieved context.
+- `confidence` must be in `[0, 1]` (post-processing may floor low confidences when codes are grounded).
+- Placeholder or schema-echo responses are rejected and trigger a retry path.
+
+---
+
+## 6. Models and behavior notes
+
+Refer to [MODEL_COMPARISON_REPORT.md](MODEL_COMPARISON_REPORT.md) for complete comparative results. Highlights:
+
+- Llama 3.2 1B (fp16) — clean JSON, good calibration.
+- Gemma 3 1B — noisier JSON, required bracket-matched extraction and confidence-floor fixes.
+- H2O Danube3 500M — smallest weights, fast to load, required `no_system_role` workaround for chat template.
+- Llama Q4_K_M (GGUF via llama-cpp-python) — fastest CPU throughput, smallest disk footprint, excellent JSON quality.
+
+---
+
+## 7. Setup & Quickstart
+
+Prereqs: Python 3.10+ (3.12 used during testing)
+
+Install dependencies:
 
 ```bash
 pip install lancedb sentence-transformers transformers torch python-dotenv pandas
 ```
 
-Configuration notes
-- The scripts default to a Windows-style LanceDB path used for development (`C:\AIgnatov\lancedb_store`). Edit the `db_dir` variable in both scripts to a Linux/macOS path when running locally.
-- For gated models (e.g. Meta Llama 3.2), set `HF_TOKEN` in a `.env` file or export `HF_TOKEN` in your environment. Without a token the code falls back to an ungated tiny model.
-
-Quickstart — build KB and run tests
+Optional: create a virtualenv:
 
 ```bash
-# 1) (Optional) create a virtualenv
 python -m venv .venv
 source .venv/bin/activate
+```
 
-# 2) install deps
-pip install lancedb sentence-transformers transformers torch python-dotenv pandas
+Build the fake KB (once):
 
-# 3) build the fake knowledge base (run once)
+```bash
 python 01_build_fake_kb_lancedb.py
+```
 
-# 4) run the RAG edge tests
+Run the edge tests:
+
+```bash
 python -u 02_rag_llama32_edge_tests.py
 ```
 
-Outputs
-- Each test emits a validated JSON object that includes `candidate_icd_codes`, `confidence`, `flags` and `model_used`.
-- Example result files are written to `/tmp` by the test harness (see script arguments).
+Notes:
 
-Git / CI notes
-- This repository ignores model caches, local LanceDB stores, env files and editor metadata via `.gitignore`.
+- The scripts default to a Windows-style LanceDB path used by the project author. Change `db_dir` inside the scripts to point to a Linux/macOS path when running here.
+- For gated HF models, set `HF_TOKEN` in a `.env` file or as an environment variable; otherwise the code falls back to an ungated tiny model.
 
-Safety & grounding
-- The prompt and post-processing enforce that suggested ICD codes must appear in the retrieved context — this reduces hallucination risk.
-- The test-suite includes adversarial cases (empty input, prompt-injection requests, nonsense) to validate the pipeline's defensive behavior.
+---
 
-Next steps / extension ideas
-- Replace the synthetic ICD seed with a full ICD-10 CSV import.
-- Add a persistent results writer to SQL using `sql_fields_to_store`.
-- Add CI job to run the edge-tests on PRs using a tiny local model to catch regressions.
+## 8. Safety, grounding and pipeline fixes
 
-If you'd like, I can now:
-- Stage and commit these changes locally, and/or
-- Add a remote named `local-clinical` and push (please provide the remote URL)
+Key robustness measures applied in the pipeline:
+
+- Bracket-matched `extract_json()` with fallbacks (first-balanced-braces, fence stripping).
+- Confidence floor applied in `post_process()` when grounded ICD candidates exist but `confidence` is reported as `0`.
+- Coercion of list-valued `normalized_chief_complaint` to a joined string when models return a list.
+- Prompt-injection detection: inputs that explicitly request schema or data are rejected with a `RED_schema_request` result and not sent to the LLM.
+
+---
+
+## 9. Extending this project
+
+- Replace `build_fake_icd_docs()` with an ICD-10 CSV import to expand coverage.
+- Persist validated outputs to a SQL store using the `sql_fields_to_store` output field.
+- Add a CI job that runs the lightweight edge-tests on PRs using the quantized GGUF model to catch regressions early.
+
+---
+
+## 10. Where to go next (I can help)
+
+- Restore or expand the ICD seed set from an authoritative CSV.
+- Add persistence (SQL writer) for validated outputs.
+- Create a `requirements.txt` and a small GitHub Actions job to run the edge tests on PRs.
+
+If you want, I will now stage, commit and (optionally) add the `local-clinical` remote and push — provide the remote URL or tell me to prompt for it.
 
