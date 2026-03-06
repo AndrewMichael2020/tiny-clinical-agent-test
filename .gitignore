@@ -1,71 +1,35 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-*.egg-info/
-
-# Virtual environments
-env/
-venv/
-.venv/
-pip-wheel-metadata/
-
-# Editor / IDE
-.vscode/
-.idea/
-*.sublime-workspace
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Environment / secrets
-.env
-.env.*
-
-# Hugging Face / model caches
-hf_cache/
-.cache/huggingface/
-models--*/
-
-# LanceDB / project data
-lancedb_store/
-kb_docs.lance/
-data/
-_transactions/
-_versions/
-
-# Logs
-logs/
-
-# Local test outputs
-*.log
-tmp/
-dist/
-build/
-# Secrets
+# ── Secrets ───────────────────────────────────────────────────────────────────
 .env
 
-# HuggingFace model cache (13 GB — Windows-style path literal on this Linux host)
-# Double-backslash is the gitignore escape for a literal backslash
+# ── HuggingFace model cache (large; paths vary by OS) ─────────────────────────
+# Windows-style literal (double-backslash required for gitignore escaping)
 C:\\AIgnatov\\hf_cache/
-# Glob fallback in case path varies
+# Generic glob fallbacks
 *hf_cache*/
 *hf_cache/
+# Standard HF_HOME locations
+~/.cache/huggingface/
+.cache/huggingface/
 
-# GGUF model downloads (large binary files, stored in /tmp outside workspace)
+# ── Large model weight files ───────────────────────────────────────────────────
+# GGUF quantised binaries
 *.gguf
+# Raw weight shards (transformers / pytorch)
 *.bin
 *.safetensors
 *.pt
 *.pth
+# llama-cpp-python compiled objects
+*.so
+*.dll
 
-# Python
+# ── Ephemeral run artefacts ────────────────────────────────────────────────────
+results_*.json
+log_*.txt
+cpu_monitor.log
+/tmp/
+
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
@@ -76,18 +40,21 @@ build/
 .venv/
 venv/
 env/
+pip-wheel-metadata/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
 
-# Test result JSONs (ephemeral, stored in /tmp)
-results_*.json
-log_*.txt
-cpu_monitor.log
+# ── YAML local overrides (keep model_config.yaml; ignore personal overrides) ──
+model_config.local.yaml
 
-# LanceDB store is intentionally committed (small KB, version-controlled)
+# ── LanceDB store is intentionally committed (small KB, version-controlled) ───
 
-# Editor / OS
+# ── Editor / OS ───────────────────────────────────────────────────────────────
 .DS_Store
 *.swp
 *.swo
 .vscode/
 .idea/
 Thumbs.db
+desktop.ini
