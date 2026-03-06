@@ -1,3 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# Virtual environments
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+.env.*
+
+# Hugging Face / model caches
+hf_cache/
+.cache/huggingface/
+models--*/
+
+# LanceDB / project data
+lancedb_store/
+kb_docs.lance/
+data/
+_transactions/
+_versions/
+
+# Logs
+logs/
+
+# Local test outputs
+*.log
+tmp/
+dist/
+build/
 # Secrets
 .env
 
