@@ -37,7 +37,6 @@ cpu_monitor.log
 icd_9_dictionary.csv
 mock_uncoded.csv
 icd9_mapping_results.csv
-ICD9_PIPELINE_RUN_REPORT.md
 
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/

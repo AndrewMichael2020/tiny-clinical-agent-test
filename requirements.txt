@@ -1,0 +1,17 @@
+# Core RAG / vector store
+lancedb==0.29.2
+pyarrow==23.0.1
+
+# Embeddings
+sentence-transformers==5.2.3
+
+# Local LLM inference (GGUF)
+# Install with CUDA support: CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
+llama-cpp-python==0.3.16
+
+# Data handling
+pandas==3.0.1
+numpy==2.4.2
+
+# Utilities
+python-dotenv==1.2.2

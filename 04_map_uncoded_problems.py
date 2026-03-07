@@ -503,6 +503,16 @@ _FLAG_ALIASES: Dict[str, str] = {
     "NO_CONTEXT":             "LOW_CONTEXT",
 }
 
+# Only these flags are meaningful pipeline output — anything else the model invents
+# (e.g. ICD descriptions, free-text) is silently dropped.
+_VALID_FLAGS: frozenset = frozenset({
+    "EMPTY_INPUT",
+    "NONSENSE_INPUT",
+    "LOW_CONTEXT",
+    "GENERATION_ERROR",
+    "CONFLICTING_SYMPTOMS",
+})
+
 
 def normalize_flags(flags: List[Any]) -> List[str]:
     result: List[str] = []
@@ -511,7 +521,7 @@ def normalize_flags(flags: List[Any]) -> List[str]:
             continue
         upper = f.upper().strip()
         canonical = _FLAG_ALIASES.get(upper, upper)
-        if canonical not in result:
+        if canonical in _VALID_FLAGS and canonical not in result:
             result.append(canonical)
     return result
 
