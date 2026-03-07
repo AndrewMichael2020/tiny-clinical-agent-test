@@ -12,7 +12,7 @@
 |---|---|
 | Input | `mock_uncoded.csv` — 100 patient problem notes |
 | Knowledge Base | `icd_9_dictionary.csv` — 7,650 unique ICD-9-CM codes (LanceDB `kb_docs_icd9`) |
-| Embedder | `all-MiniLM-L6-v2` (sentence-transformers) |
+| Embedder | `NeuML/pubmedbert-base-embeddings` (768-dim, biomedical) |
 | LLM | Llama 3.2 1B Instruct Q4_K_M (GGUF, CPU) |
 | Retrieval | Top-8 ANN L2 search |
 | Runtime | **852.4 s (~14.2 min)** |
@@ -150,7 +150,7 @@ PatientProblemDescription (raw text)
         │ normal
         ▼
 ┌────────────────────────┐
-│ all-MiniLM-L6-v2       │  embed query
+│ NeuML/pubmedbert-base-embeddings │  embed query (768-dim, biomedical)
 │ LanceDB ANN search     │  top-8, L2
 └────────────────────────┘
         │ retrieved_rows + distances
