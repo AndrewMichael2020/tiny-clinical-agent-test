@@ -34,6 +34,11 @@ cpu_monitor.log
 *.manifest
 /lancedb_store/
 
+icd_9_dictionary.csv
+mock_uncoded.csv
+icd9_mapping_results.csv
+ICD9_PIPELINE_RUN_REPORT.md
+
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
