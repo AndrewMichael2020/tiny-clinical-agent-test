@@ -129,7 +129,6 @@ more objective signal.
 | Model wrote narrative sentences ("The patient has…") | Changed normalisation target: "concise clinical phrase (2–5 words)" |
 | Model picked up to 8 codes including procedure codes | Capped to 1–3; added procedure preference; post-process procedure stripper |
 | "Care Team:" → 8 hallucinated codes | Trailing-colon admin bypass |
-| "OTHER CHILDREN RUN AROUND…" → fall codes | Behavioural-complaint regex + clinical-signal guard |
 | Model put ICD descriptions in `flags` field | `_VALID_FLAGS` whitelist; non-valid strings silently dropped |
 | NONSENSE_INPUT over-fired on valid clinical text | Removed instruction from prompt; handled deterministically only |
 | Low retrieval quality not signalled | Retrieval distance gate (threshold 1.10) → `LOW_CONTEXT` |
