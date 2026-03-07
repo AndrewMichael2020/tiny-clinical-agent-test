@@ -67,10 +67,10 @@ Four profiles are defined and benchmarked. Switch with `--model <profile>`, the 
 
 | Profile key | Model | Size | Dtype | Gated | Backend |
 |---|---|---|---|---|---|
-| `llama32_1b_instruct` *(default)* | `meta-llama/Llama-3.2-1B-Instruct` | ~2.5 GB | float16 | ✅ HF token + Meta licence | Transformers |
+| `llama32_1b_instruct`  | `meta-llama/Llama-3.2-1B-Instruct` | ~2.5 GB | float16 | ✅ HF token + Meta licence | Transformers |
 | `gemma3_1b` | `google/gemma-3-1b-it` | ~2.0 GB | bfloat16 | ✅ HF token + Google licence | Transformers |
 | `danube3_500m` | `h2oai/h2o-danube3-500m-chat` | ~0.98 GB | float16 | ❌ ungated | Transformers |
-| `llama32_1b_q4km` | `bartowski/Llama-3.2-1B-Instruct-GGUF` (Q4_K_M) | **~0.81 GB** | Q4_K_M | ❌ ungated | llama-cpp-python |
+| `llama32_1b_q4km` *(default)* | `bartowski/Llama-3.2-1B-Instruct-GGUF` (Q4_K_M) | **~0.81 GB** | Q4_K_M | ❌ ungated | llama-cpp-python |
 
 > **No HF token?** Use `danube3_500m` or `llama32_1b_q4km` — both run with zero credentials.
 
