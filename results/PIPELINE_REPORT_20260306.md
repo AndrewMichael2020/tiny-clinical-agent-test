@@ -125,7 +125,7 @@ These fire *after* LLM generation and prevent downstream failures. 0 failures re
 ---
 
 ## 7. Deep-Dive: `EDGE_pregnancy_bleeding` (The Motivating Failure Case): 
-# The correct code was NOT present in the dictionary
+### The correct code was NOT present in the dictionary
 
 **Complaint:** *"I'm 8 weeks pregnant and I started light vaginal bleeding this morning with mild cramping."*
 
