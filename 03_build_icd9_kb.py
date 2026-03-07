@@ -110,7 +110,15 @@ def main() -> int:
     flush_table(db_dir, old_table)    # flush stale ICD-10 table
 
     # ── Step 3: Embed ─────────────────────────────────────────────────────────
-    embedder_name = "NeuML/pubmedbert-base-embeddings"
+    # Load embedder name from model_config.yaml so KB and mapper always agree.
+    _cfg_path = Path(__file__).resolve().parent / "model_config.yaml"
+    try:
+        import yaml
+        with open(_cfg_path) as _f:
+            _cfg = yaml.safe_load(_f)
+        embedder_name = _cfg.get("embedder", "NeuML/pubmedbert-base-embeddings")
+    except Exception:
+        embedder_name = "NeuML/pubmedbert-base-embeddings"
     log(f"STEP 3 — Embedding {len(docs)} docs with {embedder_name}")
     t_emb = time.perf_counter()
     embedder = SentenceTransformer(embedder_name, device="cpu")

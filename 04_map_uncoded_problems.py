@@ -28,7 +28,10 @@ def log(msg: str) -> None:
 
 # ── Model config ──────────────────────────────────────────────────────────────
 
-def load_model_config(profile_name: Optional[str] = None) -> Dict[str, Any]:
+_DEFAULT_EMBEDDER = "NeuML/pubmedbert-base-embeddings"
+
+def load_model_config(profile_name: Optional[str] = None) -> Tuple[Dict[str, Any], str]:
+    """Return (profile_dict, embedder_name). Both sourced from model_config.yaml."""
     try:
         import yaml
     except ImportError:
@@ -47,7 +50,8 @@ def load_model_config(profile_name: Optional[str] = None) -> Dict[str, Any]:
         raise ValueError(f"Unknown profile '{chosen}'. Available: {list(profiles.keys())}")
     profile = dict(profiles[chosen])
     profile["profile_name"] = chosen
-    return profile
+    embedder_name = cfg.get("embedder", _DEFAULT_EMBEDDER)
+    return profile, embedder_name
 
 
 # ── Utility ───────────────────────────────────────────────────────────────────
@@ -192,7 +196,26 @@ def detect_complaint_type(text: str) -> str:
     return "normal"
 
 
-# ICD-9-CM procedure codes are Volume 3: two leading digits + optional decimal
+# Strip only very explicit trailing metadata: ": HOSPITALCODE Month date, year"
+# Conservative — requires a colon+space separator AND a recognisable month name.
+# Does NOT strip bare years, numeric-only dates, or hyphenated ranges.
+_EMBED_NOISE_RE = re.compile(
+    r":\s+"                                                         # colon + whitespace separator
+    r"(?:[A-Z]{2,5}\s+)?"                                          # optional hospital abbreviation
+    r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*"      # month name (required)
+    r".*$",
+    re.IGNORECASE,
+)
+
+
+def _clean_for_embedding(text: str) -> str:
+    """Strip trailing hospital abbreviations and date metadata before embedding.
+
+    Keeps the core clinical phrase so the embedder focuses on medical content.
+    Falls back to original text if stripping would leave fewer than 5 characters.
+    """
+    cleaned = _EMBED_NOISE_RE.sub("", text).strip()
+    return cleaned if len(cleaned) >= 5 else text
 # e.g. 36.07, 45.42, 51, 01H — recognisable by a 1-or-2-digit numeric prefix.
 _PROC_CODE_RE = re.compile(r"^\d{1,2}(\.\d+)?$")
 _PROCEDURE_KEYWORDS_RE = re.compile(
@@ -840,9 +863,10 @@ def main() -> int:
     load_env_from_script_dir()
     token = get_env("HF_TOKEN")
 
-    profile = load_model_config(args.model)
+    profile, embedder_name = load_model_config(args.model)
     _id_or_path = profile.get("model_path") or profile.get("model_id", "?")
     log(f"Model profile: {profile['profile_name']} → {_id_or_path}")
+    log(f"Embedder: {embedder_name}")
 
     hb = start_heartbeat("imports_light", every_seconds=20)
     try:
@@ -857,7 +881,8 @@ def main() -> int:
     table_name = "kb_docs_icd9"
 
     with timed_block("load embedder"):
-        embedder = SentenceTransformer("NeuML/pubmedbert-base-embeddings", device="cpu")
+        embedder = SentenceTransformer(embedder_name, device="cpu")
+        log(f"  Loaded: {embedder_name}")
 
     with timed_block("connect + open table"):
         db    = lancedb.connect(str(db_dir))
@@ -908,8 +933,11 @@ def main() -> int:
             })
             continue
 
-        # Embed problem description for retrieval
-        embed_text = problem_desc[:500]
+        # Strip trailing hospital codes / dates before embedding so the medical
+        # embedder focuses on the clinical phrase rather than metadata noise.
+        embed_text = _clean_for_embedding(problem_desc)[:500]
+        if embed_text != problem_desc.strip()[:500]:
+            log(f"  Embed text (cleaned): {embed_text[:120]}")
         with timed_block("embed query"):
             q_vec = embedder.encode(
                 embed_text, normalize_embeddings=True, show_progress_bar=False

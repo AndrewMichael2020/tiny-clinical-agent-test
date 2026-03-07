@@ -5,6 +5,10 @@
 
 active_profile: llama32_1b_q4km
 
+# Embedder used for both KB construction (03_build_icd9_kb.py) and query retrieval (04_map_uncoded_problems.py).
+# Both scripts must use the same embedder — change here and rebuild the KB if switching.
+embedder: NeuML/pubmedbert-base-embeddings
+
 profiles:
   llama32_1b_instruct:
     label: "Llama 3.2 1B Instruct"
